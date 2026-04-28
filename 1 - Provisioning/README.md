@@ -102,4 +102,82 @@ Terraform/
 <img width="1485" height="428" alt="image" src="https://github.com/user-attachments/assets/0c8ed369-d6bd-4c57-adad-86fbc2dd11ba" />
 
 * Deploy the infrastructure from the saved plan `terraform apply "tfplan"`
+<img width="1483" height="425" alt="image" src="https://github.com/user-attachments/assets/a3fe9aca-20ec-433f-bbed-10e9d7f7c2f8" />
+
+
+## Creating Infrastructure with Terraform
+
+**1. Ansible Installation**
+
+* Install pipx
+```
+sudo apt update
+sudo apt install pipx
+pipx ensurepath
+```
+<img width="1482" height="702" alt="image" src="https://github.com/user-attachments/assets/d6a551d0-8c03-4e23-ac73-f4b9ba813f76" />
+
+* Install the full Ansible package using pipx
+```
+pipx install --include-deps ansible # Run this if you want to install the full Ansible package
+pipx install ansible-core           # Run this if you want the minimal ansible-core package
+```
+<img width="1486" height="65" alt="image" src="https://github.com/user-attachments/assets/14bdb70a-f30a-42d1-bab8-8938fa5a02c2" />
+
+**2. Project Structure**
+
+* Create a new directory for Ansible in your local computer, the structures will be as follow:
+<pre>
+ansible/
+├── <a href="./ansible/ansible.cfg"><b>ansible.cfg</b></a>                        # Ansible configuration settings
+├── <a href="./ansible/inventory"><b>inventory</b></a>                          # Auto-generated from Terraform
+├── <a href="./ansible/01-setup-servers.yml"><b>01-setup-servers.yml</b></a>               # Task 3: User creation, UFW, SSH hardening
+├── <a href="./ansible/02-gateway.yml"><b>02-gateway.yml</b></a>                     # Task 8: Nginx native, Certbot, SSL wildcard
+├── <a href="./ansible/03-docker.yml"><b>03-docker.yml</b></a>                      # Task 5: Docker installation + PostgreSQL staging
+├── <a href="./ansible/04-monitoring.yml"><b>04-monitoring.yml</b></a>                  # Task 7: Prometheus, Grafana, Node Exporter
+├── <a href="./ansible/04-registry.yml"><b>04-registry.yml</b></a>                    # Task 4: Docker Registry private
+├── <a href="./ansible/05-cicd.yml"><b>05-cicd.yml</b></a>                        # Task 6: GitLab Runner, SonarQube
+├── <a href="./ansible/06-k3s.yml"><b>06-k3s.yml</b></a>                         # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
+├── 📂 <b>group_vars/</b>
+│   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables and credentials
+├── 📂 <b>templates/</b>
+│   ├── <a href="./ansible/templates/nginx-gateway.j2"><b>nginx-gateway.j2</b></a>               # Nginx reverse proxy config
+│   ├── <a href="./ansible/templates/prometheus.j2"><b>prometheus.j2</b></a>                  # Prometheus scrape config
+│   ├── <a href="./ansible/templates/docker-compose-monitoring.j2"><b>docker-compose-monitoring.j2</b></a>   # Monitoring stack
+│   ├── <a href="./ansible/templates/docker-compose-registry.j2"><b>docker-compose-registry.j2</b></a>     # Docker Registry
+│   └── <a href="./ansible/templates/docker-compose-staging-db.j2"><b>docker-compose-staging-db.j2</b></a>   # PostgreSQL staging
+└── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file 
+</pre>
+
+**3. Encrypting content with Ansible Vault**
+Ansible Vault is a built-in Ansible feature for encrypting sensitive data such as passwords and credentials directly inside your variable files, so they are safe to store in a repository.
+
+* Create a vault password file and secure it
+```
+echo "your-vault-password" > .vault_pass
+chmod 600 .vault_pass
+echo ".vault_pass" >> .gitignore
+```
+<img width="1477" height="102" alt="image" src="https://github.com/user-attachments/assets/b2a80f24-9646-4bbd-9955-0d8308fc8a3c" />
+
+
+* Add `vault_password_file = .vault_pass` to `ansible.cfg` under `[defaults]`
+<img width="1123" height="132" alt="image" src="https://github.com/user-attachments/assets/0a3585d2-c28a-49b4-8b1e-eb10d0a6f85b" />
+
+* Encrypt sensitive credentials and paste the output into group_vars/all
+```
+ansible-vault encrypt_string '<password>' --name '<variable_name>' 
+```
+<img width="1490" height="207" alt="image" src="https://github.com/user-attachments/assets/d5060550-9c55-4a82-8908-58a781e24101" />
+<img width="1474" height="250" alt="image" src="https://github.com/user-attachments/assets/aaf8b8f0-8839-44d5-b7bd-52adb554049f" />
+<img width="1483" height="205" alt="image" src="https://github.com/user-attachments/assets/2609d74f-bf9f-4d71-9116-151a3b62fc2d" />
+<img width="1484" height="357" alt="image" src="https://github.com/user-attachments/assets/7982d6ab-fa41-4957-8893-69371ca5a6e5" />
+<img width="1481" height="197" alt="image" src="https://github.com/user-attachments/assets/9b64653b-75bd-4fc1-b6f9-d1bb6faa3d47" />
+<img width="1485" height="310" alt="image" src="https://github.com/user-attachments/assets/fe4b6904-7063-436e-a300-9e1ab2b0c0df" />
+
+* Too view the encrypted content use the following command:
+```
+ansible localhost -m debug -e "@group_vars/all" -a "var=<variable_name_in_all>"
+```
+<img width="1471" height="91" alt="image" src="https://github.com/user-attachments/assets/7cc6b9ee-1aa1-4660-8c19-0adde37a14f2" />
 
