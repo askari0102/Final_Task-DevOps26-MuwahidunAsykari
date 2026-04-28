@@ -85,6 +85,7 @@ Terraform/
 ├── <a href="./Terraform/ansible-inventory.tf"><b>ansible-inventory.tf</b></a>   # Automated inventory for Ansible with custom SSH port and ProxyJump configuration for Private Subnet access
 └── <a href="./Terraform/outputs.tf"><b>outputs.tf</b></a>             # # IP & Private Key (only visible when called) outputs
 </pre>
+<img width="1484" height="51" alt="image" src="https://github.com/user-attachments/assets/646945af-4b65-47e7-a4f5-8537a75f9602" />
 
 **3. Deploying the Infrastructure**
 
