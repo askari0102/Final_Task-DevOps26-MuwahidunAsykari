@@ -122,7 +122,10 @@ pipx ensurepath
 pipx install --include-deps ansible # Run this if you want to install the full Ansible package
 pipx install ansible-core           # Run this if you want the minimal ansible-core package
 ```
-<img width="1486" height="65" alt="image" src="https://github.com/user-attachments/assets/14bdb70a-f30a-42d1-bab8-8938fa5a02c2" />
+<img width="1477" height="356" alt="image" src="https://github.com/user-attachments/assets/edb6c629-dc0c-4447-a21a-eb1c758a5d0e" />
+
+* Verify with `ansible --version`
+<img width="1483" height="224" alt="image" src="https://github.com/user-attachments/assets/b23b106b-ed2e-4eda-b054-d69f74b01ab8" />
 
 **2. Project Structure**
 
@@ -180,4 +183,3 @@ ansible-vault encrypt_string '<password>' --name '<variable_name>'
 ansible localhost -m debug -e "@group_vars/all" -a "var=<variable_name_in_all>"
 ```
 <img width="1471" height="91" alt="image" src="https://github.com/user-attachments/assets/7cc6b9ee-1aa1-4660-8c19-0adde37a14f2" />
-
