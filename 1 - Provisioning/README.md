@@ -136,7 +136,7 @@ ansible/
 ├── <a href="./ansible/inventory"><b>inventory</b></a>                          # Auto-generated from Terraform
 ├── <a href="./ansible/01-setup-servers.yml"><b>01-setup-servers.yml</b></a>               # Task 3: User creation, UFW, SSH hardening
 ├── <a href="./ansible/02-gateway.yml"><b>02-gateway.yml</b></a>                     # Task 8: Nginx native, Certbot, SSL wildcard
-├── <a href="./ansible/03-docker.yml"><b>03-docker.yml</b></a>                      # Task 5: Docker installation + PostgreSQL staging
+├── <a href="./ansible/03-docker.yml"><b>03-docker.yml</b></a>                      # Task 5: Docker installation and setup staging (PostgreSQL and NGINX for load balancing)
 ├── <a href="./ansible/04-monitoring.yml"><b>04-monitoring.yml</b></a>                  # Task 7: Prometheus, Grafana, Node Exporter
 ├── <a href="./ansible/04-registry.yml"><b>04-registry.yml</b></a>                    # Task 4: Docker Registry private
 ├── <a href="./ansible/05-cicd.yml"><b>05-cicd.yml</b></a>                        # Task 6: GitLab Runner, SonarQube
