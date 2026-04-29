@@ -134,22 +134,23 @@ pipx install ansible-core           # Run this if you want the minimal ansible-c
 ansible/
 ├── <a href="./ansible/ansible.cfg"><b>ansible.cfg</b></a>                        # Ansible configuration settings
 ├── <a href="./ansible/inventory"><b>inventory</b></a>                          # Auto-generated from Terraform
-├── <a href="./ansible/01-setup-servers.yml"><b>01-setup-servers.yml</b></a>               # Task 3: User creation, UFW, SSH hardening
-├── <a href="./ansible/02-gateway.yml"><b>02-gateway.yml</b></a>                     # Task 8: Nginx native, Certbot, SSL wildcard
-├── <a href="./ansible/03-docker.yml"><b>03-docker.yml</b></a>                      # Task 5: Docker installation and setup staging (PostgreSQL and NGINX for load balancing)
-├── <a href="./ansible/04-monitoring.yml"><b>04-monitoring.yml</b></a>                  # Task 7: Prometheus, Grafana, Node Exporter
-├── <a href="./ansible/04-registry.yml"><b>04-registry.yml</b></a>                    # Task 4: Docker Registry private
-├── <a href="./ansible/05-cicd.yml"><b>05-cicd.yml</b></a>                        # Task 6: GitLab Runner, SonarQube
-├── <a href="./ansible/06-k3s.yml"><b>06-k3s.yml</b></a>                         # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
+├── <a href="./ansible/setup-servers.yml"><b>setup-servers.yml</b></a>               # Task 3: User, UFW, Docker, Node Exporter, cAdvisor
+├── <a href="./ansible/setup-gateway.yml"><b>setup-gateway.yml</b></a>               # Task 8: Nginx native, Certbot, SSL wildcard
+├── <a href="./ansible/setup-staging.yml"><b>setup-staging.yml</b></a>               # Task 5: PostgreSQL, Nginx LB, initial deploy fe & be
+├── <a href="./ansible/setup-monitoring.yml"><b>setup-monitoring.yml</b></a>            # Task 7: Prometheus, Grafana
+├── <a href="./ansible/setup-registry.yml"><b>setup-registry.yml</b></a>              # Task 4: Docker Registry private
+├── <a href="./ansible/setup-cicd.yml"><b>setup-cicd.yml</b></a>                   # Task 6: GitLab Runner, Testing
+├── <a href="./ansible/setup-k3s.yml"><b>setup-k3s.yml</b></a>                    # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
 ├── 📂 <b>group_vars/</b>
-│   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables and credentials
+│   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables + Vault encrypted credentials
 ├── 📂 <b>templates/</b>
 │   ├── <a href="./ansible/templates/nginx-gateway.j2"><b>nginx-gateway.j2</b></a>               # Nginx reverse proxy config
+│   ├── <a href="./ansible/templates/nginx-staging.j2"><b>nginx-staging.j2</b></a>               # Nginx load balancer staging
 │   ├── <a href="./ansible/templates/prometheus.j2"><b>prometheus.j2</b></a>                  # Prometheus scrape config
 │   ├── <a href="./ansible/templates/docker-compose-monitoring.j2"><b>docker-compose-monitoring.j2</b></a>   # Monitoring stack
 │   ├── <a href="./ansible/templates/docker-compose-registry.j2"><b>docker-compose-registry.j2</b></a>     # Docker Registry
-│   └── <a href="./ansible/templates/docker-compose-staging-db.j2"><b>docker-compose-staging-db.j2</b></a>   # PostgreSQL staging
-└── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file 
+│   └── <a href="./ansible/templates/docker-compose-staging.j2"><b>docker-compose-staging.j2</b></a>      # PostgreSQL + Nginx LB staging
+└── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file (git-ignored)
 </pre>
 
 **3. Encrypting content with Ansible Vault**
