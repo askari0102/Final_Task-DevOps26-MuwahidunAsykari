@@ -177,6 +177,8 @@ ansible-vault encrypt_string '<password>' --name '<variable_name>'
 <img width="1481" height="297" alt="image" src="https://github.com/user-attachments/assets/3e07b292-7664-4b51-9c0b-c874bb24aaf6" />
 <img width="1481" height="197" alt="image" src="https://github.com/user-attachments/assets/9b64653b-75bd-4fc1-b6f9-d1bb6faa3d47" />
 <img width="1483" height="300" alt="image" src="https://github.com/user-attachments/assets/afb323ea-6dee-4b2e-9162-17c8094ed9b6" />
+<img width="1479" height="199" alt="image" src="https://github.com/user-attachments/assets/ec6f53f8-a7ff-4d38-8bfc-ff4647002d28" />
+<img width="1481" height="261" alt="image" src="https://github.com/user-attachments/assets/c081d57a-496c-48cf-9491-e9155af81533" />
 
 * Too view the encrypted content use the following command:
 ```
