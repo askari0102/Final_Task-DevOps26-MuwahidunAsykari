@@ -134,13 +134,13 @@ pipx install ansible-core           # Run this if you want the minimal ansible-c
 ansible/
 ├── <a href="./ansible/ansible.cfg"><b>ansible.cfg</b></a>                        # Ansible configuration settings
 ├── <a href="./ansible/inventory"><b>inventory</b></a>                          # Auto-generated from Terraform
-├── <a href="./ansible/setup-servers.yml"><b>setup-servers.yml</b></a>               # Task 3: User, UFW, Docker, Node Exporter, cAdvisor
-├── <a href="./ansible/setup-gateway.yml"><b>setup-gateway.yml</b></a>               # Task 8: Nginx native, Certbot, SSL wildcard
-├── <a href="./ansible/setup-staging.yml"><b>setup-staging.yml</b></a>               # Task 5: PostgreSQL, Nginx LB, initial deploy fe & be
-├── <a href="./ansible/setup-monitoring.yml"><b>setup-monitoring.yml</b></a>            # Task 7: Prometheus, Grafana
-├── <a href="./ansible/setup-registry.yml"><b>setup-registry.yml</b></a>              # Task 4: Docker Registry private
-├── <a href="./ansible/setup-cicd.yml"><b>setup-cicd.yml</b></a>                   # Task 6: GitLab Runner, Testing
-├── <a href="./ansible/setup-k3s.yml"><b>setup-k3s.yml</b></a>                    # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
+├── <a href="./ansible/setup-servers.yml"><b>setup-servers.yml</b></a>                  # Task 3: User, UFW, Docker, Node Exporter, cAdvisor
+├── <a href="./ansible/setup-gateway.yml"><b>setup-gateway.yml</b></a>                  # Task 8: Nginx native, Certbot, SSL wildcard
+├── <a href="./ansible/setup-staging.yml"><b>setup-staging.yml</b></a>                  # Task 5: PostgreSQL, Nginx LB, initial deploy fe & be
+├── <a href="./ansible/setup-monitoring.yml"><b>setup-monitoring.yml</b></a>               # Task 7: Prometheus, Grafana
+├── <a href="./ansible/setup-registry.yml"><b>setup-registry.yml</b></a>                 # Task 4: Docker Registry private
+├── <a href="./ansible/setup-cicd.yml"><b>setup-cicd.yml</b></a>                     # Task 6: GitLab Runner, Testing
+├── <a href="./ansible/setup-k3s.yml"><b>setup-k3s.yml</b></a>                      # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
 ├── 📂 <b>group_vars/</b>
 │   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables + Vault encrypted credentials
 ├── 📂 <b>templates/</b>
