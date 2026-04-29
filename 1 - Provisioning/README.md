@@ -174,10 +174,9 @@ ansible-vault encrypt_string '<password>' --name '<variable_name>'
 <img width="1490" height="207" alt="image" src="https://github.com/user-attachments/assets/d5060550-9c55-4a82-8908-58a781e24101" />
 <img width="1474" height="250" alt="image" src="https://github.com/user-attachments/assets/aaf8b8f0-8839-44d5-b7bd-52adb554049f" />
 <img width="1483" height="205" alt="image" src="https://github.com/user-attachments/assets/2609d74f-bf9f-4d71-9116-151a3b62fc2d" />
-<img width="1491" height="199" alt="image" src="https://github.com/user-attachments/assets/f88086d2-bb3e-436c-9814-02636ccf665c" />
-<img width="1484" height="477" alt="image" src="https://github.com/user-attachments/assets/fccd1290-fe2d-4b31-98d4-419f6b7d7639" />
+<img width="1481" height="297" alt="image" src="https://github.com/user-attachments/assets/3e07b292-7664-4b51-9c0b-c874bb24aaf6" />
 <img width="1481" height="197" alt="image" src="https://github.com/user-attachments/assets/9b64653b-75bd-4fc1-b6f9-d1bb6faa3d47" />
-<img width="1483" height="472" alt="image" src="https://github.com/user-attachments/assets/22e2fa78-8ac1-4c51-a88e-8a0388319d6a" />
+<img width="1483" height="300" alt="image" src="https://github.com/user-attachments/assets/afb323ea-6dee-4b2e-9162-17c8094ed9b6" />
 
 * Too view the encrypted content use the following command:
 ```
