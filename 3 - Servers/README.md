@@ -64,3 +64,4 @@ Run the setup-servers.yml playbook to configure the users, SSH keys, and firewal
 ```
 ansible-playbook setup-servers.yml
 ```
+<img width="1486" height="254" alt="image" src="https://github.com/user-attachments/assets/98fc7d12-4dfc-4106-a244-921db19a975c" />
