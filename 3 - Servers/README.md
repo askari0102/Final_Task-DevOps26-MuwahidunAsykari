@@ -4,7 +4,7 @@
 
 **1. Rebuilding Servers**
 
-The infrastructure can be destroyed using `terraform destroy` and recreated using the same Infrastructure Deployment commands as in [Provisioning](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/blob/main/1%20-%20Provisioning/README.md) to achieve an identical state.**
+The infrastructure can be destroyed using `terraform destroy` and recreated using the same Infrastructure Deployment commands as in [Provisioning](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/blob/main/1%20-%20Provisioning/README.md) to achieve an identical state.
 
 * Destroy the infrastructures with ``terraform destroy``
 <img width="1481" height="336" alt="image" src="https://github.com/user-attachments/assets/0e79a9f3-74ff-4e84-a9d3-169d35397108" />
