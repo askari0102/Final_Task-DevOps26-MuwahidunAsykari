@@ -35,6 +35,7 @@ Terraform automatically generates a single RSA key pair (finaltask-key.pem) and 
 
 Terraform also automatically an SSH config file (~/.ssh/config) configured with a ProxyJump to route private network traffic through the Gateway.
 <img width="1467" height="468" alt="image" src="https://github.com/user-attachments/assets/36574f6e-0a0f-4e77-9a00-3eb607e48619" />
+<img width="1919" height="769" alt="image" src="https://github.com/user-attachments/assets/9b3ba061-677d-4c9c-a73f-c8b0d7754a76" />
 
 **5. Creating New User**
 
@@ -60,8 +61,22 @@ UFW is enabled on all servers. Ansible automatically opens only the ports needed
 ## Execution & Verification 
 
 **1. Execute the Ansible Playbook**
+
 Run the setup-servers.yml playbook to configure the users, SSH keys, and firewall rules across all servers.
 ```
 ansible-playbook setup-servers.yml
 ```
-<img width="1486" height="254" alt="image" src="https://github.com/user-attachments/assets/98fc7d12-4dfc-4106-a244-921db19a975c" />
+<img width="1492" height="907" alt="image" src="https://github.com/user-attachments/assets/7afaddf1-cc57-4215-8bd3-6bbae786a3f5" />
+<img width="1480" height="189" alt="image" src="https://github.com/user-attachments/assets/88a0bc8e-2611-45f4-98e0-76fd55fe44a5" />
+
+**2. Verify SSH Config & Login**
+
+Test the SSH configuration by connecting directly to a private server from your local machine.
+`ssh staging`
+<img width="1478" height="301" alt="image" src="https://github.com/user-attachments/assets/bcf931f5-2e08-4dcc-b0a2-ea190338f0cc" />
+
+**3. Verify UFW Rules**
+
+Once logged into the server, verify that UFW is active and only the allowed ports are open.
+`sudo ufw status`
+<img width="1473" height="390" alt="image" src="https://github.com/user-attachments/assets/bdabccc5-1a2f-489e-8aa2-7ec4af9faef7" />
