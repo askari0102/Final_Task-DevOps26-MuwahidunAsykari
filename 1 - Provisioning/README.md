@@ -172,8 +172,6 @@ echo ".vault_pass" >> .gitignore
 ```
 ansible-vault encrypt_string '<password>' --name '<variable_name>' 
 ```
-<img width="1490" height="207" alt="image" src="https://github.com/user-attachments/assets/d5060550-9c55-4a82-8908-58a781e24101" />
-<img width="1474" height="250" alt="image" src="https://github.com/user-attachments/assets/aaf8b8f0-8839-44d5-b7bd-52adb554049f" />
 <img width="1483" height="205" alt="image" src="https://github.com/user-attachments/assets/2609d74f-bf9f-4d71-9116-151a3b62fc2d" />
 <img width="1481" height="297" alt="image" src="https://github.com/user-attachments/assets/3e07b292-7664-4b51-9c0b-c874bb24aaf6" />
 <img width="1481" height="197" alt="image" src="https://github.com/user-attachments/assets/9b64653b-75bd-4fc1-b6f9-d1bb6faa3d47" />
@@ -181,8 +179,20 @@ ansible-vault encrypt_string '<password>' --name '<variable_name>'
 <img width="1479" height="199" alt="image" src="https://github.com/user-attachments/assets/ec6f53f8-a7ff-4d38-8bfc-ff4647002d28" />
 <img width="1481" height="261" alt="image" src="https://github.com/user-attachments/assets/c081d57a-496c-48cf-9491-e9155af81533" />
 
+* For `new_user_password`, the value must be a hashed password (required by Linux).
+```
+# SHA-512
+openssl passwd -6 'your-password'
+# SHA-256
+openssl passwd -5 'your-password'
+```
+<img width="1486" height="55" alt="image" src="https://github.com/user-attachments/assets/177ac8ba-3fe6-4d32-8280-f7d0211b90a8" />
+<img width="1485" height="120" alt="image" src="https://github.com/user-attachments/assets/1d2dcbe1-7431-4783-b725-3da209a8e013" />
+
 * Too view the encrypted content use the following command:
 ```
 ansible localhost -m debug -e "@group_vars/all" -a "var=<variable_name_in_all>"
 ```
-<img width="1471" height="91" alt="image" src="https://github.com/user-attachments/assets/7cc6b9ee-1aa1-4660-8c19-0adde37a14f2" />
+<img width="1481" height="91" alt="image" src="https://github.com/user-attachments/assets/2308c952-6dd4-4704-8c6d-97fa51d99083" />
+
+
