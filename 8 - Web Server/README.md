@@ -36,8 +36,8 @@ To allow Certbot (and Ansible) to automatically modify DNS records for SSL valid
 ```
 ansible-playbook setup-gateway.yml
 ```
-<img width="1484" height="807" alt="image" src="https://github.com/user-attachments/assets/6f148516-ceed-4515-af47-23e3d2799dce" />
-
+<img width="1474" height="871" alt="image" src="https://github.com/user-attachments/assets/d0643fe3-703e-46da-9d4a-49c3ab9d2b0d" />
+<img width="1475" height="400" alt="image" src="https://github.com/user-attachments/assets/f49f3846-ea9a-4e9d-83fa-782d3fe2e3f2" />
 
 **2. Verify Cloudflare DNS Records**
 <img width="1919" height="839" alt="image" src="https://github.com/user-attachments/assets/38fd9871-e63d-4481-81fb-1520d6b51911" />
