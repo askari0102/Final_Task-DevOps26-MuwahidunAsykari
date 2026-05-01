@@ -178,6 +178,8 @@ ansible-vault encrypt_string '<password>' --name '<variable_name>'
 <img width="1483" height="300" alt="image" src="https://github.com/user-attachments/assets/afb323ea-6dee-4b2e-9162-17c8094ed9b6" />
 <img width="1479" height="199" alt="image" src="https://github.com/user-attachments/assets/ec6f53f8-a7ff-4d38-8bfc-ff4647002d28" />
 <img width="1481" height="261" alt="image" src="https://github.com/user-attachments/assets/c081d57a-496c-48cf-9491-e9155af81533" />
+<img width="1481" height="212" alt="image" src="https://github.com/user-attachments/assets/f5d69315-7418-4bc9-ad06-af77959886b5" />
+<img width="1482" height="275" alt="image" src="https://github.com/user-attachments/assets/0f5685f6-a805-45ce-bd1f-012f92786835" />
 
 * For `new_user_password`, the value must be a hashed password (required by Linux).
 ```
