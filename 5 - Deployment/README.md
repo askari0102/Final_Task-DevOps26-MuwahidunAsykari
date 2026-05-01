@@ -172,6 +172,8 @@ The PostgreSQL database and Nginx Load Balancer are deployed automatically with 
 ```
 ansible-playbook setup-staging.yml
 ```
+<img width="1475" height="521" alt="image" src="https://github.com/user-attachments/assets/da170b9f-66ba-4b94-b60c-aa3eb597ba56" />
+
 
 **2. CI/CD Pipeline Deployment (Application)**
 
