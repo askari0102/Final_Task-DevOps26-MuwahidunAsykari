@@ -99,10 +99,10 @@ Terraform/
 <img width="1425" height="68" alt="image" src="https://github.com/user-attachments/assets/8edaf942-7a4d-4fb1-87d7-775964b8bb2e" />
 
 * Review and save the execution plan `terraform plan -out=tfplan`
-<img width="1485" height="428" alt="image" src="https://github.com/user-attachments/assets/0c8ed369-d6bd-4c57-adad-86fbc2dd11ba" />
+<img width="1489" height="445" alt="image" src="https://github.com/user-attachments/assets/69234648-182c-4064-b06d-d098fb855ca4" />
 
 * Deploy the infrastructure from the saved plan `terraform apply "tfplan"`
-<img width="1483" height="425" alt="image" src="https://github.com/user-attachments/assets/a3fe9aca-20ec-433f-bbed-10e9d7f7c2f8" />
+<img width="1486" height="449" alt="image" src="https://github.com/user-attachments/assets/4bba9649-849d-4ffe-ad95-c36ccd6bb472" />
 
 
 ## Creating Infrastructure with Terraform
