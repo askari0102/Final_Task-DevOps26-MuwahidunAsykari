@@ -1,6 +1,6 @@
 # Container Registry
 
-## Registry Configuration**
+## Registry Configuration
 
 The private Docker Registry is deployed as a container on the monitoring server using Ansible. It runs on port `5000`.
 <img width="1484" height="372" alt="image" src="https://github.com/user-attachments/assets/9f9d8f05-16a0-420f-b518-e01eff13c66b" />
