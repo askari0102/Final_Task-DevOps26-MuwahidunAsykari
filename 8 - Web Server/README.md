@@ -46,12 +46,14 @@ ansible-playbook setup-gateway.yml
 ```
 # Login to the gateway server
 ssh gateway
-
 # Check the script
-ls -la /usr/local/bin/ssl-renew.sh
+sudo crontab -l
+# Run renewal simulation
+sudo certbot renew --dry-run
 ```
 <img width="1489" height="297" alt="image" src="https://github.com/user-attachments/assets/ed2b8797-04bd-4ba2-a7b1-4f55e52077f2" />
-<img width="1483" height="52" alt="image" src="https://github.com/user-attachments/assets/dd69cc64-e18b-4854-911f-5837d390d120" />
+<img width="1472" height="69" alt="image" src="https://github.com/user-attachments/assets/09576a4e-2996-4a16-b8c1-243d78f677ab" />
+<img width="1474" height="296" alt="image" src="https://github.com/user-attachments/assets/a6fc8e4a-a7ec-4eae-964c-b9bad1b8ff52" />
 
 **4. Test HTTPS Access**
 ```
