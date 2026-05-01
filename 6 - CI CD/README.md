@@ -32,9 +32,9 @@ Configure variables in **GitLab** > **Settings** > **CI/CD** > **Variables** to 
 <img width="1661" height="838" alt="image" src="https://github.com/user-attachments/assets/3653a0ef-d799-40b8-b1ef-250f1a339625" />
 
 **4. Pipeline Execution**
-This pipeline works differently based on the branch. The Staging branch is deployed directly to the server using SSH and Docker Compose. Meanwhile, the Production branch is set up for GitOps (FluxCD) using Kubernetes manifests.
+This pipeline works differently based on the branch. The staging branch is deployed directly to the server using SSH and Docker Compose. Meanwhile, the production branch is set up for GitOps (FluxCD) using Kubernetes manifests.
 
-* Create a `.git-ci.yml` on both branches. Commit and push on `Staging` branch.
+* Create a `.git-ci.yml` on both branches. Commit and push to `staging` branch.
 ```
 stages:
   - test
@@ -122,3 +122,5 @@ verify_staging:
   tags:
     - cicd
 ```
+<img width="1483" height="349" alt="image" src="https://github.com/user-attachments/assets/80393fa9-478b-473a-b1a1-05675f143c00" />
+
