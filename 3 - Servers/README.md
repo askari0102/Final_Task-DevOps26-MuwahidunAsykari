@@ -33,7 +33,7 @@ Terraform automatically generates a single RSA key pair (finaltask-key.pem) and 
 <img width="1478" height="456" alt="image" src="https://github.com/user-attachments/assets/86a21718-2bb1-4228-8e45-e0959cca2720" />
 <img width="1455" height="36" alt="image" src="https://github.com/user-attachments/assets/b794f2eb-b2fb-4ed2-a51e-6b3bd4724612" />
 
-Terraform also automatically an SSH config file (~/.ssh/config) configured with a ProxyJump to route private network traffic through the Gateway.
+Terraform also automatically creates an SSH config file (~/.ssh/config) configured with a ProxyJump to route private network traffic through the Gateway.
 <img width="1484" height="586" alt="image" src="https://github.com/user-attachments/assets/c3ff8d5c-b949-43ce-9da0-fd79d6256092" />
 <img width="1919" height="769" alt="image" src="https://github.com/user-attachments/assets/9b3ba061-677d-4c9c-a73f-c8b0d7754a76" />
 
