@@ -142,14 +142,14 @@ ansible/
 ├── <a href="./ansible/setup-cicd.yml"><b>setup-cicd.yml</b></a>                     # Task 6: GitLab Runner, Testing
 ├── <a href="./ansible/setup-k3s.yml"><b>setup-k3s.yml</b></a>                      # Task 9: k3s cluster, Nginx Ingress, PostgreSQL
 ├── 📂 <b>group_vars/</b>
-│   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables + Vault encrypted credentials
+│   └── <a href="./ansible/group_vars/all"><b>all</b></a>                            # Global variables + Encrypted credentials
 ├── 📂 <b>templates/</b>
 │   ├── <a href="./ansible/templates/nginx-gateway.j2"><b>nginx-gateway.j2</b></a>               # Nginx reverse proxy config
 │   ├── <a href="./ansible/templates/nginx-staging.j2"><b>nginx-staging.j2</b></a>               # Nginx load balancer staging
 │   ├── <a href="./ansible/templates/prometheus.j2"><b>prometheus.j2</b></a>                  # Prometheus scrape config
 │   ├── <a href="./ansible/templates/docker-compose-monitoring.j2"><b>docker-compose-monitoring.j2</b></a>   # Monitoring stack
 │   ├── <a href="./ansible/templates/docker-compose-registry.j2"><b>docker-compose-registry.j2</b></a>     # Docker Registry
-│   ├── <a href="./ansible/templates/docker-compose-cicd.j2"><b>docker-compose-cicd.j2</b></a>     # SonarQube for testing
+│   ├── <a href="./ansible/templates/docker-compose-cicd.j2"><b>docker-compose-cicd.j2</b></a>         # SonarQube for testing
 │   └── <a href="./ansible/templates/docker-compose-staging.j2"><b>docker-compose-staging.j2</b></a>      # PostgreSQL + Nginx LB staging
 └── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file (git-ignored)
 </pre>
