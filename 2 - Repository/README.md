@@ -2,7 +2,7 @@
 
 ## Repository Setup & Configuration
 
-**1. Creating Private Repositories on GitLab**
+### **1. Creating Private Repositories on GitLab**
 
 Before cloning the code, we need to prepare the private repositories on GitLab. 
 
@@ -23,7 +23,7 @@ Before cloning the code, we need to prepare the private repositories on GitLab.
 <img width="1918" height="902" alt="image" src="https://github.com/user-attachments/assets/2a6b0c4d-b81f-4ddc-b3b9-2ce7c3698022" />
 <img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/40e00699-aa9f-46c6-90d7-52935833eb9e" />
 
-**2. Code Migration & Branching Setup**
+### **2. Code Migration & Branching Setup**
 
 Open local terminal and execute the following commands to configure both repositories. The commands will clone the original source, link it to the private GitLab repositories, and create the required branches (staging and production). 
 
