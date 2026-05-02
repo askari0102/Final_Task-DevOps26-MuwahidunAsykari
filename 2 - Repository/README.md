@@ -3,16 +3,10 @@
 ## Repository Setup & Configuration
 
 ### **1. Creating Private Repositories on GitLab**
-
-Before cloning the code, we need to prepare the private repositories on GitLab. 
-
-* Go to the GitLab Homepage
+Prepare two private repositories on GitLab before migrating the code.
+* Go to GitLab, click the **+ (Plus) icon** and select **New project/repository** -> **Create blank project**.
 <img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/6186f893-8f45-4bb3-aa83-3258bf1149e6" />
-
-* On the left sidebar or top navigation bar, click the `+` **(Plus) icon** and select **New project/repository**.
 <img width="1919" height="279" alt="image" src="https://github.com/user-attachments/assets/1b35e458-e75a-4aba-a82f-58ec556f2ee0" />
-
-* Choose **Create blank project**.
 <img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/57bf3251-999c-47b9-8e54-170c156da6a7" />
 
 * Fill in the project details and click the **Create project** button.
@@ -24,8 +18,7 @@ Before cloning the code, we need to prepare the private repositories on GitLab.
 <img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/40e00699-aa9f-46c6-90d7-52935833eb9e" />
 
 ### **2. Code Migration & Branching Setup**
-
-Open local terminal and execute the following commands to configure both repositories. The commands will clone the original source, link it to the private GitLab repositories, and create the required branches (staging and production). 
+Clone the original source, link it to the private GitLab repositories, and create the required branches (`staging` and `production`).
 
 * First create a root directory for the app and navigate into it
 <img width="1919" height="253" alt="image" src="https://github.com/user-attachments/assets/ef136c4f-2e53-479a-a9b0-5553321b102b" />
@@ -95,4 +88,9 @@ git push -u origin production
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/d5ee485a-895e-4e67-ab9c-6864309d4492" />
 <img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/788bc119-444b-4726-bdb2-71b698751217" />
 
+### **3. Environment Configuration**
+For security, `.env` values are securely stored in GitLab CI/CD Variables and injected automatically during deployment.
+* **Frontend**: Configured `REACT_APP_BASEURL` to connect to the Backend API.
 
+* **Backend**: Configured all required environment variables for full database and application integration.
+<img width="1417" height="97" alt="image" src="https://github.com/user-attachments/assets/5b6a8e3a-dc44-4ced-a988-c9be906c3ee9" />
