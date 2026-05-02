@@ -80,7 +80,7 @@ sudo gitlab-runner restart
 
 <img width="1709" height="842" alt="image" src="https://github.com/user-attachments/assets/77c8de24-d15f-4850-8406-a0d132214ae1" />
 
-**4. Pipeline Execution**
+**6. Pipeline Execution**
 This pipeline is fully dynamic and utilizes GitLab predefined variables (like `$CI_PROJECT_NAME`), allowing the **exact same `.gitlab-ci.yml` script** to be used across both Frontend and Backend repositories. The deployment behavior changes based on the branch:
 
 * **Staging Branch:** Deployed directly to the Staging server using SSH.
@@ -192,3 +192,12 @@ verify_staging:
 * Push the `.gitlab-ci.yml` to their respective repositories to trigger the pipelines
 <img width="1483" height="349" alt="image" src="https://github.com/user-attachments/assets/80393fa9-478b-473a-b1a1-05675f143c00" />
 <img width="1424" height="287" alt="image" src="https://github.com/user-attachments/assets/177ba823-2f97-4467-8c7a-31135c1f527f" />
+
+**7. Pipeline Monitoring & Logs**
+
+After pushing the `.gitlab-ci.yml`, you can monitor the progress in **GitLab** > **Build** > **Pipelines**.
+
+* **Test Stage**: Runs SonarQube analysis to ensure code quality and security.
+* **Build Stage**: Builds the Docker image and pushes it to the Private Registry.
+* **Deploy Stage**: Connects to the Staging server via SSH, pulls the new image, and restarts containers using Docker Compose.
+* **Verify Stage**: Verify Stage: Uses `wget --spider` to confirm the application is live.
