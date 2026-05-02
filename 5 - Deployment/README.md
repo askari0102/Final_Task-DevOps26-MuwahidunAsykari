@@ -14,8 +14,7 @@ The source code for the frontend and backend is hosted on a private GitLab repos
   <img width="1919" height="35" alt="image" src="https://github.com/user-attachments/assets/f1767aca-57e3-4505-9f7f-7d061ec1960b" />
 
   - Update `public/index.html`
-  - 
-  Add the script tag to load the generated environment variables:
+  - Add the script tag to load the generated environment variables:
   <img width="1483" height="133" alt="image" src="https://github.com/user-attachments/assets/eecf27f5-082b-451a-b9e2-0a04fc482769" />
   
   - Update API Configuration (api.js) to include `window._env_`
