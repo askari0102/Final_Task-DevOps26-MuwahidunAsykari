@@ -2,9 +2,8 @@
 
 ## Server Requirements
 
-**1. Rebuilding Servers**
-
-The infrastructure can be destroyed using `terraform destroy` and recreated using the same Infrastructure Deployment commands as in [Provisioning](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/blob/main/1%20-%20Provisioning/README.md) to achieve an identical state.
+### **1. Rebuilding Servers**
+The infrastructure can be destroyed using `terraform destroy` and recreated using the same Infrastructure Deployment commands as in [Provisioning](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/tree/main/1%20-%20Provisioning#3-deploying-the-infrastructure) to achieve an identical state.
 
 * Destroy the infrastructures with ``terraform destroy``
 <img width="1481" height="336" alt="image" src="https://github.com/user-attachments/assets/0e79a9f3-74ff-4e84-a9d3-169d35397108" />
@@ -16,19 +15,16 @@ The infrastructure can be destroyed using `terraform destroy` and recreated usin
 <img width="1477" height="200" alt="image" src="https://github.com/user-attachments/assets/eca0d6db-dfb8-4154-b603-758e7d603d76" />
 <img width="1482" height="310" alt="image" src="https://github.com/user-attachments/assets/bad17d80-f56e-4b7f-8d27-b9d51ca76893" />
 
-**2. Operating System (OS) Base**
-
+### **2. Operating System (OS) Base**
 All servers are provisioned using **Ubuntu 22.04 LTS**.
 <img width="1464" height="340" alt="image" src="https://github.com/user-attachments/assets/6ec06d37-da82-43ab-b98c-0285729b5741" />
 <img width="1462" height="73" alt="image" src="https://github.com/user-attachments/assets/81724538-f420-429f-962d-431ee50bb313" />
 
-**3. Changing SSH Port**
-
+### **3. Changing SSH Port**
 During the provisioning phase, the default SSH port is automatically modified from 22 to 6969. This is achieved using Terraform's `user_data` script, which executes upon the first boot of every instance
 <img width="738" height="461" alt="image" src="https://github.com/user-attachments/assets/4a1fdf34-bffc-48ad-bc45-e722fec614cb" />
 
-**4. SSH Key & SSH Config**
-
+### **4. SSH Key & SSH Config**
 Terraform automatically generates a single RSA key pair (finaltask-key.pem) and injects it into all instances.
 <img width="1478" height="456" alt="image" src="https://github.com/user-attachments/assets/86a21718-2bb1-4228-8e45-e0959cca2720" />
 <img width="1455" height="36" alt="image" src="https://github.com/user-attachments/assets/b794f2eb-b2fb-4ed2-a51e-6b3bd4724612" />
@@ -37,13 +33,12 @@ Terraform also automatically creates an SSH config file (~/.ssh/config) configur
 <img width="1484" height="586" alt="image" src="https://github.com/user-attachments/assets/c3ff8d5c-b949-43ce-9da0-fd79d6256092" />
 <img width="1919" height="769" alt="image" src="https://github.com/user-attachments/assets/9b3ba061-677d-4c9c-a73f-c8b0d7754a76" />
 
-**5. Creating New User**
-
+### **5. Creating New User**
 Ansible automatically creates a new user `finaltask-Asykari` for all servers. The new user uses the same ssh key as root.
 <img width="1478" height="247" alt="image" src="https://github.com/user-attachments/assets/1e8908d9-df96-4220-98fe-44bb4d46f80b" />
 <img width="1475" height="674" alt="image" src="https://github.com/user-attachments/assets/a447d0b0-45f7-446d-a691-59609411bd44" />
 
-**6. UFW Firewall Configuration**
+### **6. UFW Firewall Configuration**
 UFW is enabled on all servers. Ansible automatically opens only the ports needed for each server's role:
   * Universal Rule (All Servers):
     - Port `6969` (SSH)
@@ -60,8 +55,7 @@ UFW is enabled on all servers. Ansible automatically opens only the ports needed
 
 ## Execution & Verification 
 
-**1. Execute the Ansible Playbook**
-
+### **1. Execute the Ansible Playbook**
 Run the setup-servers.yml playbook to configure the users, SSH keys, and firewall rules across all servers.
 ```
 ansible-playbook setup-servers.yml
@@ -69,14 +63,24 @@ ansible-playbook setup-servers.yml
 <img width="1492" height="907" alt="image" src="https://github.com/user-attachments/assets/7afaddf1-cc57-4215-8bd3-6bbae786a3f5" />
 <img width="1480" height="189" alt="image" src="https://github.com/user-attachments/assets/88a0bc8e-2611-45f4-98e0-76fd55fe44a5" />
 
-**2. Verify SSH Config & Login**
-
-Test the SSH configuration by connecting directly to a private server from your local machine.
-`ssh staging`
+### **2. Verify SSH Config & Login**
+Verify that both SSH Key and Password authentication are working correctly.
+* Test SSH Key Login (via Config):
+Test the automated SSH configuration and ProxyJump by connecting to a private server.
+```
+ssh staging
+```
 <img width="1478" height="301" alt="image" src="https://github.com/user-attachments/assets/bcf931f5-2e08-4dcc-b0a2-ea190338f0cc" />
 
-**3. Verify UFW Rules**
+* Test Password Authentication:
+Verify the user's password authentication locally by switching into the user profile.
+```
+su - finaltask-Asykari
+```
+<img width="1430" height="84" alt="image" src="https://github.com/user-attachments/assets/d18c3a2c-598a-40b7-8812-aea9f053a9ab" />
 
+
+### **3. Verify UFW Rules**
 Once logged into the server, verify that UFW is active and only the allowed ports are open.
 `sudo ufw status`
 <img width="1473" height="390" alt="image" src="https://github.com/user-attachments/assets/bdabccc5-1a2f-489e-8aa2-7ec4af9faef7" />
