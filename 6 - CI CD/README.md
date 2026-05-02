@@ -148,7 +148,8 @@ deploy_staging:
         export CI_PROJECT_NAME=$CI_PROJECT_NAME &&
         export IMAGE_TAG=$IMAGE_TAG &&
         docker compose pull &&
-        docker compose up -d"
+        docker compose up -d &&
+        docker image prune -f"
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging"'
   tags:
@@ -200,7 +201,7 @@ After pushing the `.gitlab-ci.yml`, you can monitor the progress in **GitLab** >
 
 * **Test Stage**: Runs SonarQube analysis to ensure code quality and security.
 * **Build Stage**: Builds the Docker image and pushes it to the Private Registry.
-* **Deploy Stage**: Connects to the Staging server via SSH, pulls the new image, and restarts containers using Docker Compose.
+* **Deploy Stage**: Connects to the Staging server via SSH, pulls the new image, restarts containers using Docker Compose and removes dangling images to prevent disk space from being full.
 * **Verify Stage**: Verify Stage: Uses `wget --spider` to confirm the application is live.
 
 <img width="1919" height="605" alt="image" src="https://github.com/user-attachments/assets/1abddb57-c435-48ee-9f96-cb65cf5a1544" />
