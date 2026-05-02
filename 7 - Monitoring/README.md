@@ -3,7 +3,7 @@
 ## Monitoring & Alerting
 
 ### 1. Setup & Deployment via Ansible
-Deploy Prometheus and Grafana seamlessly using Ansible.
+Deploy Prometheus and Grafana using Ansible.
 ```
 ansible-playbook setup-monitoring.yml
 ```
@@ -41,10 +41,27 @@ Secure the Prometheus dashboard by enabling Basic Authentication at the Nginx on
 
 ### **4. Create & Configure Panel (VM & Containers)**
 
+* Click **+** > **New Dashboard** > **Add Panel** > **Configure Visualization**.
+<img width="1919" height="193" alt="image" src="https://github.com/user-attachments/assets/64ae6a6d-eac7-44eb-8faa-6fcf377d45d7" />
+<img width="1919" height="885" alt="image" src="https://github.com/user-attachments/assets/b085090e-deff-4361-aff0-b99429340165" />
+<img width="1919" height="643" alt="image" src="https://github.com/user-attachments/assets/67900cfc-056c-4eee-a151-75ef23fcd462" />
 
+* Select **Prometheus** as the source, switch to **Code**, paste the PromQL query, and click **Run query**.
+<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/fa6f5a4b-4a7a-466a-bf7a-7e1849524aac" />
 
+### 5. Visualization & Refinement
+After running the queries, refine the panels to make the dashboard readable and informative.
 
+* **Select Visualization:** Choose appropriate types such as Time Series (for Network I/O), Gauge, or Bar Gauge (for CPU/RAM/Storage).
 
+<img width="409" height="769" alt="image" src="https://github.com/user-attachments/assets/bd93a50a-f85e-416b-ac31-85a28ddb8305" />
 
+* **Standard Options:**
+  - Set the **Unit** according to the queried metric (e.g., Percent (0-100) for CPU/RAM, Gigabytes for Storage, Bytes/sec for Network).
+  - Define **Min/Max** values to reflect actual hardware capacity (e.g., Max: 100 for percentage metrics).
+  <img width="408" height="357" alt="image" src="https://github.com/user-attachments/assets/c00873ae-c9ec-4192-a774-a06bddf6809e" />
+
+* **Thresholds:** Configure color-coded indicators (e.g., Green, Yellow, Red) based on the threshold rules to provide quick visual alerts.
+<img width="403" height="259" alt="image" src="https://github.com/user-attachments/assets/b21009d1-d2b1-496d-90ac-bd441495a30c" />
 
 
