@@ -49,6 +49,24 @@ Secure the Prometheus dashboard by enabling Basic Authentication at the Nginx on
 * Select **Prometheus** as the source, switch to **Code**, paste the PromQL query, and click **Run query**.
 <img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/fa6f5a4b-4a7a-466a-bf7a-7e1849524aac" />
 
+* **VM Resources Queries (Node Exporter)**
+
+| Metric                | PromQL Query                                                                                              | Unit        | Threshold |
+|-----------------------|-----------------------------------------------------------------------------------------------------------|-------------|-----------|
+| CPU Usage             | 100 - (avg by (alias) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)                             | Percent (%) | > 80%     |
+| RAM Usage             | (1 - (avg by (alias)(node_memory_MemAvailable_bytes) / avg by (alias)(node_memory_MemTotal_bytes))) * 100 | Percent (%) | > 80%     |
+| Disk Usage         | avg by (alias) (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / 1024 / 1024 / 1024     | Gigabytes   | < 2GB     |
+| VM Network (Receive)  | rate(node_network_receive_bytes_total{device=~"eth0|ens.*"}[5m])                                          | Bytes/sec   | -         |
+| VM Network (Transmit) | rate(node_network_transmit_bytes_total{device=~"eth0|ens.*"}[5m])                                         | Bytes/sec   | -         |
+
+* **Container Resources Queries (cAdvisor)**
+  
+| Metric            | PromQL Query                                                                  | Unit        | Threshold |
+|-------------------|-------------------------------------------------------------------------------|-------------|-----------|
+| Container CPU     | sum by (alias) (rate(container_cpu_usage_seconds_total{image!=""}[5m])) * 100 | Percent (%) | -         |
+| Container RAM     | sum by (alias) (container_memory_working_set_bytes{image!=""})                | Bytes (IEC) | -         |
+| NGINX Network I/O | rate(container_network_receive_bytes_total{name=~".*nginx.*"}[5m])            | Bytes/sec   | > 50 MB/s |
+
 ### 5. Visualization & Refinement
 After running the queries, refine the panels to make the dashboard readable and informative.
 
