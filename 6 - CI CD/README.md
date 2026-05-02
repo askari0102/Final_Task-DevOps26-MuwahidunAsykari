@@ -26,7 +26,38 @@ ssh -L 9000:localhost:9000 cicd
 * Generate Token by going to **User** > **My Account** > **Security**, then generate a **User Token**.
 <img width="1919" height="914" alt="image" src="https://github.com/user-attachments/assets/29babc25-d49e-43b5-8e1d-d22bbddd23de" />
 
-**3. GitLab Variables Setup
+**3. GitLab Runner Registration**
+
+To run the pipeline, we need to register the GitLab Runner on the CI/CD server.
+
+* Get Registration Token: Go to **GitLab** > **Settings** > **CI/CD** > **Runners**. Click **New project runner**. Add the `cicd` tag. Copy the registration command.
+<img width="1919" height="776" alt="image" src="https://github.com/user-attachments/assets/84407d61-ee62-430e-a18d-0c32fd0153f6" />
+<img width="1919" height="452" alt="image" src="https://github.com/user-attachments/assets/1ab7b621-b543-4ce6-91cc-f291a2784d1c" />
+<img width="1919" height="898" alt="image" src="https://github.com/user-attachments/assets/cdc5b075-7b88-4978-8ba8-cb1957008723" />
+
+* Register on Server: SSH into the CI/CD server and paste the copied command
+<img width="1919" height="72" alt="image" src="https://github.com/user-attachments/assets/a1f3416d-2d32-4d7f-b667-679fc46d26f4" />
+<img width="1919" height="426" alt="image" src="https://github.com/user-attachments/assets/b879c2c0-ddb0-4504-89da-0cff03c297c7" />
+
+**4. GitLab Runner Configuration**
+
+To allow the runner to build Docker images, we must grant it privileged access.
+* SSH into the CI/CD server and edit the configuration file
+```
+sudo nano /etc/gitlab-runner/config.toml
+```
+<img width="1710" height="31" alt="image" src="https://github.com/user-attachments/assets/317c6a80-951b-43f8-a03f-db72d5197961" />
+
+* Under the `[runners.docker]` section, modify the file to include `privileged = true` and add `/certs/client` to the volumes
+<img width="1205" height="276" alt="image" src="https://github.com/user-attachments/assets/3ef3af82-145a-4545-a794-ac9968b3e64b" />
+
+* Restart the runner to apply changes
+```
+sudo gitlab-runner restart
+```
+<img width="1706" height="56" alt="image" src="https://github.com/user-attachments/assets/2a81bb94-3c9b-4a5b-97a2-7938ad8ef1bb" />
+
+**3. GitLab Variables Setup**
 
 Configure variables in **GitLab** > **Settings** > **CI/CD** > **Variables** to allow the pipeline to communicate with the registry and staging server.
 <img width="1661" height="838" alt="image" src="https://github.com/user-attachments/assets/3653a0ef-d799-40b8-b1ef-250f1a339625" />
