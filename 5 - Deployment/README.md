@@ -101,12 +101,12 @@ The source code for the frontend and backend is hosted on a private GitLab repos
   ```
   To
   ```go
-  err := godotenv.Load()
-    if err != nil {
+  errEnv := godotenv.Load()
+    if errEnv != nil {
     fmt.Println("Info: .env file not found, using OS/Docker's variables.")
 	}
   ```
-  <img width="1463" height="149" alt="image" src="https://github.com/user-attachments/assets/7196768f-03ef-49a1-86de-f8654996ac2c" />
+  <img width="1398" height="157" alt="image" src="https://github.com/user-attachments/assets/a1c85adb-4343-40a1-ae23-0568fed68700" />
 
   - Dockerfile (Multi-stage & Non-Root)
     
