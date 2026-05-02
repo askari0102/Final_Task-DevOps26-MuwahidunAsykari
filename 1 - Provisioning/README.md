@@ -99,6 +99,33 @@ Terraform/
 * Deploy the infrastructure from the saved plan `terraform apply "tfplan"`
 <img width="1486" height="449" alt="image" src="https://github.com/user-attachments/assets/4bba9649-849d-4ffe-ad95-c36ccd6bb472" />
 
+### **4. SSH Keys & IP Configuration**
+SSH keys and IP configurations are automatically handled and attached to all VMs during the Terraform provisioning process.
+* **SSH Keys:** Automatically generated and attached to the instances via AWS Key Pair 
+<img width="1481" height="674" alt="image" src="https://github.com/user-attachments/assets/e0c0993e-5a56-4166-96b3-b9190160a08e" />
+
+---
+<img width="1471" height="185" alt="image" src="https://github.com/user-attachments/assets/b186a9f9-21f3-4b01-8e05-36dbe3277e94" />
+
+
+* **IP Configuration:** Public IP is assigned to the Gateway, and Private IPs to the rest. All IPs are automatically mapped into the Ansible inventory file.
+<img width="1469" height="183" alt="image" src="https://github.com/user-attachments/assets/1774b306-6aab-45f3-bffe-b6eddf6bfbfc" />
+
+---
+<img width="1466" height="197" alt="image" src="https://github.com/user-attachments/assets/a20c584a-5cf6-4778-8dcb-f9c7e370a821" />
+
+---
+<img width="1459" height="189" alt="image" src="https://github.com/user-attachments/assets/820f7f5d-5431-454d-be7a-234db91762bd" />
+
+---
+<img width="1458" height="156" alt="image" src="https://github.com/user-attachments/assets/92f2a28e-7d7a-46ae-9ccc-b08145c9348f" />
+
+---
+<img width="1467" height="205" alt="image" src="https://github.com/user-attachments/assets/04fdc5fc-2d30-4270-922a-66e5da167765" />
+
+---
+<img width="1483" height="490" alt="image" src="https://github.com/user-attachments/assets/24adc5c7-afcc-43c1-ba76-37663228916c" />
+
 
 ## Configuration Management with Ansible
 
@@ -145,7 +172,7 @@ ansible/
 │   ├── <a href="./ansible/templates/docker-compose-registry.j2"><b>docker-compose-registry.j2</b></a>     # Docker Registry
 │   ├── <a href="./ansible/templates/docker-compose-cicd.j2"><b>docker-compose-cicd.j2</b></a>         # SonarQube for testing
 │   └── <a href="./ansible/templates/docker-compose-staging.j2"><b>docker-compose-staging.j2</b></a>      # PostgreSQL + Nginx LB staging
-└── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file (git-ignored)
+└── .vault_pass                        # Ansible Vault password file (git-ignored)
 </pre>
 
 ### **3. Encrypting content with Ansible Vault**
