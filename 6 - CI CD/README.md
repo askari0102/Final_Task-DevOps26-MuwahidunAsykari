@@ -2,16 +2,14 @@
 
 ## Automated CI/CD Pipeline
 
-**1. Server Provisioning**
-
+### **1. Server Provisioning**
 The first step is to prepare the CI/CD server. 
 ```
 ansible-playbook setup-cicd.yml
 ```
 <img width="1476" height="914" alt="image" src="https://github.com/user-attachments/assets/8f6d6dd9-c06d-4012-8208-0f25b753ef68" />
 
-**2. Accessing SonarQube & Token Generation**
-
+### **2. Accessing SonarQube & Token Generation**
 Since the server is inside a private network, an encrypted tunnel must be used to access the dashboard from a local machine.
 * Open SSH Tunnel
 ```
@@ -26,8 +24,7 @@ ssh -L 9000:localhost:9000 cicd
 * Generate Token by going to **User** > **My Account** > **Security**, then generate a **User Token**.
 <img width="1919" height="914" alt="image" src="https://github.com/user-attachments/assets/29babc25-d49e-43b5-8e1d-d22bbddd23de" />
 
-**3. GitLab Runner Registration**
-
+### **3. GitLab Runner Registration**
 To run the pipeline, we need to register the GitLab Runner on the CI/CD server.
 
 * Get Registration Token: Go to **GitLab** > **Settings** > **CI/CD** > **Runners**. Click **New project runner**. Add the `cicd` tag. Copy the registration command.
@@ -39,8 +36,7 @@ To run the pipeline, we need to register the GitLab Runner on the CI/CD server.
 <img width="1919" height="72" alt="image" src="https://github.com/user-attachments/assets/a1f3416d-2d32-4d7f-b667-679fc46d26f4" />
 <img width="1919" height="426" alt="image" src="https://github.com/user-attachments/assets/b879c2c0-ddb0-4504-89da-0cff03c297c7" />
 
-**4. GitLab Runner Configuration**
-
+### **4. GitLab Runner Configuration**
 To allow the runner to build Docker images, we must grant it privileged access.
 * SSH into the CI/CD server and edit the configuration file
 ```
@@ -57,10 +53,8 @@ sudo gitlab-runner restart
 ```
 <img width="1706" height="56" alt="image" src="https://github.com/user-attachments/assets/2a81bb94-3c9b-4a5b-97a2-7938ad8ef1bb" />
 
-**5. GitLab Variables Setup**
-
+### **5. GitLab Variables Setup**
 * Go to your Frontend repository and navigate to **Settings > CI/CD > Variables**.  
-
 * Add the following required credentials and configurations:
    * `SSH_PRIVATE_KEY` (Type: File) - Private key for SSH access.
    * `STAGING_IP` - IP address of the Staging server.
@@ -73,14 +67,12 @@ sudo gitlab-runner restart
    * `TEST_URL` - Public URL to verify the deployment.
    * `DOCKER_COMPOSE` (Type: File) - The `docker-compose.yml` script.
    * `ENV_FILE` (Type: File) - The `.env` variables.
-
 * Open your Backend repository and navigate to **Settings > CI/CD > Variables**.
- 
 * Repeat the process to add the exact same variables, make sure `DOCKER_COMPOSE` and `ENV_FILE` contain the scripts specifically made for the Backend.
 
 <img width="1709" height="842" alt="image" src="https://github.com/user-attachments/assets/77c8de24-d15f-4850-8406-a0d132214ae1" />
 
-**6. Pipeline Execution**
+### **6. Pipeline Execution**
 This pipeline is fully dynamic and utilizes GitLab predefined variables (like `$CI_PROJECT_NAME`), allowing the **exact same `.gitlab-ci.yml` script** to be used across both Frontend and Backend repositories. The deployment behavior changes based on the branch:
 
 * **Staging Branch:** Deployed directly to the Staging server using SSH.
@@ -126,6 +118,7 @@ build_image:
   tags:
     - cicd
 
+# 3a. DEPLOY STAGE (STAGING)
 deploy_staging:
   stage: deploy
   image: alpine:latest
@@ -178,12 +171,21 @@ verify_staging:
   stage: verify
   image: alpine:latest
   before_script:
-    - apk add --no-cache curl
+    - apk add --no-cache wget
   script:
     - echo "Verifying staging deployment..."
     - sleep 10
-    - curl -s -o /dev/null -w "%{http_code}" $TEST_URL | grep -E '^[2345]' || (echo "Deployment Failed" && exit 1)
-    - echo "Deployment Verified Successfully."
+    - |
+      WGET_OUT=$(wget --spider -t 5 --waitretry=5 $TEST_URL 2>&1) || true
+      
+      if echo "$WGET_OUT" | grep -E -q '200 OK|405 Method Not Allowed'; then
+        echo "Deployment Verified Successfully. Server responded!"
+        exit 0
+      else
+        echo "Deployment Failed - Host Unreachable or Returned Error"
+        echo "$WGET_OUT"
+        exit 1
+      fi
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging"'
   tags:
@@ -193,8 +195,7 @@ verify_staging:
 <img width="1483" height="349" alt="image" src="https://github.com/user-attachments/assets/80393fa9-478b-473a-b1a1-05675f143c00" />
 <img width="1424" height="287" alt="image" src="https://github.com/user-attachments/assets/177ba823-2f97-4467-8c7a-31135c1f527f" />
 
-**7. Pipeline Monitoring & Logs**
-
+### **7. Pipeline Monitoring & Logs**
 After pushing the `.gitlab-ci.yml`, you can monitor the progress in **GitLab** > **Build** > **Pipelines**.
 
 * **Test Stage**: Runs SonarQube analysis to ensure code quality and security.
@@ -205,8 +206,7 @@ After pushing the `.gitlab-ci.yml`, you can monitor the progress in **GitLab** >
 <img width="1919" height="605" alt="image" src="https://github.com/user-attachments/assets/1abddb57-c435-48ee-9f96-cb65cf5a1544" />
 <img width="1919" height="616" alt="image" src="https://github.com/user-attachments/assets/eaa74d4a-7ddb-4a97-93f7-261a594b5c46" />
 
-**8. Final Results & Verification**
-
+### **8. Final Results & Verification**
 Once the pipeline shows a green "Passed" status, verify the deployment by accessing the public URL
 <img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/dc988492-1306-4343-bab0-35f3ef3ef386" />
 <img width="1919" height="1016" alt="image" src="https://github.com/user-attachments/assets/eed4a985-b86e-4b7c-adc1-ebf90c79d2c2" />
