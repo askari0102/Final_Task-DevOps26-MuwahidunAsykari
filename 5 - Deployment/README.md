@@ -8,7 +8,7 @@ The source code for the frontend and backend is hosted on a private GitLab repos
 
 **Docker Multi-stage builds** are implemented to keep the final images as small as possible. For security, `.env` secrets are not hardcoded into the image. Instead, environment variables are injected dynamically at runtime. Below are the source code modifications required to achieve this.
 
-**1. Frontend (Serve Static with Nginx)**
+### **1. Frontend (Serve Static with Nginx)**
 
   Navigate to the frontend repository directory and ensure the active branch is `staging`.
   <img width="1919" height="35" alt="image" src="https://github.com/user-attachments/assets/f1767aca-57e3-4505-9f7f-7d061ec1960b" />
@@ -85,7 +85,7 @@ The source code for the frontend and backend is hosted on a private GitLab repos
   <img width="1487" height="468" alt="image" src="https://github.com/user-attachments/assets/05b2d3ee-2d2a-4209-8df2-6865a3444c7a" />
   <img width="1483" height="618" alt="image" src="https://github.com/user-attachments/assets/72141e6c-1569-4a18-8669-5fab6743a9e9" />
 
-**2. Backend (Go)**
+### **2. Backend (Go)**
 
   Navigate to the backend repository directory and ensure the active branch is `staging`.
   <img width="1919" height="39" alt="image" src="https://github.com/user-attachments/assets/47a7fbe1-079d-4691-bb5a-28bb2a4dc637" />
@@ -163,23 +163,33 @@ The PostgreSQL database and Nginx Load Balancer are deployed automatically with 
   - The database volume is mapped to `/home/{{ staging_db_user }}/staging/db_data`
   - Ports are exposed to allow remote database access and application load balancing.
 <img width="1484" height="893" alt="image" src="https://github.com/user-attachments/assets/c6ef42cf-7fd1-42c3-a18b-167fa4a89bf6" />
-<img width="1479" height="739" alt="image" src="https://github.com/user-attachments/assets/0d50cedf-9f09-455f-b21e-7ff680c3787e" />
+<img width="1488" height="781" alt="image" src="https://github.com/user-attachments/assets/fc47efd6-5234-4d79-805e-606db259c93a" />
 <img width="1481" height="826" alt="image" src="https://github.com/user-attachments/assets/47582b1d-71e5-4e6a-b971-e85275d2c16e" />
 
 ## Deployment and Verification
 
-**1. Execute Ansible Playbook**
+### **1. Execute Ansible Playbook**
 ```
 ansible-playbook setup-staging.yml
 ```
 <img width="1475" height="521" alt="image" src="https://github.com/user-attachments/assets/da170b9f-66ba-4b94-b60c-aa3eb597ba56" />
 
 
-**2. CI/CD Pipeline Deployment (Application)**
+### **2. CI/CD Pipeline Deployment (Application)**
+Pushing code to the `staging` branch automatically triggers the CI/CD pipeline to build, push, and deploy the application.
+<img width="1329" height="285" alt="image" src="https://github.com/user-attachments/assets/01c5fcc6-0584-4731-9e33-ff566d229f6e" />
+<img width="1919" height="624" alt="image" src="https://github.com/user-attachments/assets/891da2f2-ebbf-4859-8f02-e2fefc53bf06" />
 
-The building of the images, pushing to the private registry, and the actual deployment of the Frontend and Backend containers are fully automated via the GitLab CI/CD pipeline. The pipeline accesses the staging server and executes the application's Docker Compose configuration. The compose is stored as a GitLab CI/CD Variable (File type) and injected directly into the server during the deployment stage.
-
-
-
+### 3. Verification
+Verify the deployment on the server and via a web browser.
+* **Server Containers**: Check running services
+```
+docker ps
+```
+Frontend and Backend have 2 containers each for Load Balancing
+<img width="1486" height="539" alt="image" src="https://github.com/user-attachments/assets/94608c40-93f5-403e-9261-75211d65265f" />
+* **App URL**: Open the App domain in browser
+<img width="1919" height="919" alt="image" src="https://github.com/user-attachments/assets/f62a45f7-3d76-453f-aac0-4787f0673fb7" />
+<img width="1919" height="587" alt="image" src="https://github.com/user-attachments/assets/a0d21500-787f-424e-a233-71fc4fe7ade0" />
 
 
