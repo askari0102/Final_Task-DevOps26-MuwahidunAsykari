@@ -206,6 +206,7 @@ After pushing the `.gitlab-ci.yml`, you can monitor the progress in **GitLab** >
 <img width="1919" height="616" alt="image" src="https://github.com/user-attachments/assets/eaa74d4a-7ddb-4a97-93f7-261a594b5c46" />
 
 **8. Final Results & Verification**
+
 Once the pipeline shows a green "Passed" status, verify the deployment by accessing the public URL
 <img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/dc988492-1306-4343-bab0-35f3ef3ef386" />
 <img width="1919" height="1016" alt="image" src="https://github.com/user-attachments/assets/eed4a985-b86e-4b7c-adc1-ebf90c79d2c2" />
