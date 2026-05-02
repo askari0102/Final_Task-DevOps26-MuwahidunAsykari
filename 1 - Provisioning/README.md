@@ -2,8 +2,7 @@
 
 ## Creating Infrastructure with Terraform
 
-**1. Environment Setup**
-
+### **1. Environment Setup**
 * Install Terraform in your local computer
 ```
 sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
@@ -35,15 +34,13 @@ sudo ./aws/install
 * Verify with `aws --v`
 <img width="1858" height="61" alt="image" src="https://github.com/user-attachments/assets/2a41d777-fdb7-4d5f-a16e-cbbca298255f" />
 
-* Create IAM user by going to AWS Management Cons*ole → IAM Dashboard → IAM Users → Create user.
-Create a dedicated IAM user to avoid using the Root Account
+* Create a dedicated IAM User in the AWS Console (IAM Dashboard → Users → Create user) to avoid using the Root Account.
 <img width="1919" height="634" alt="Screenshot 2026-04-28 091751" src="https://github.com/user-attachments/assets/ff25da0c-a8c8-45eb-8128-e7063bf197b5" />
 <img width="1919" height="799" alt="image" src="https://github.com/user-attachments/assets/d33128c6-76a2-4fe0-9c08-74c526abe225" />
 <img width="1919" height="804" alt="image" src="https://github.com/user-attachments/assets/ce8d7506-b44a-4a37-8a73-07bef0489316" />
 <img width="1919" height="248" alt="image" src="https://github.com/user-attachments/assets/b41c10ca-2463-455b-9a7d-0dc8bf337be0" />
 
-* Create AWS Console → IAM Dashboard → Users → [Select your User] → Security credentials → Access keys → Create access key.
-Generate a new Access Key specifically for the created IAM User.
+* Generate an Access Key for the new IAM User (User → Security credentials → Create access key).
 <img width="1919" height="519" alt="image" src="https://github.com/user-attachments/assets/f4eceda6-f296-49fa-9065-4ab4a48b7edb" />
 <img width="1919" height="803" alt="image" src="https://github.com/user-attachments/assets/eaad188c-2131-4fc6-b0d0-f187f75ca91c" />
 <img width="1919" height="465" alt="image" src="https://github.com/user-attachments/assets/1616f0a4-9bd1-464a-95ec-d81e74a0e873" />
@@ -62,17 +59,16 @@ Default output format: json (or just press enter)
 * Verify credentials by running `aws sts get-caller-identity`
 <img width="1853" height="140" alt="image" src="https://github.com/user-attachments/assets/98d83e59-8eaa-4138-93dc-ff68e30542b6" />
 
-**2. Infrastructure Provisioning**
-
-* Build the infrastructure using Terraform to provision six Ubuntu 22.04 LTS instances on AWS. The architecture is designed with security in mind, utilizing a Public Subnet for the entry point and a Private Subnet for application and internal workflows.
+### **2. Infrastructure Provisioning**
+* Terraform is used to provision six Ubuntu 22.04 instances on AWS. The architecture utilizes a Public Subnet for the Gateway and a Private Subnet for the rest of the servers. A NAT Gateway is deployed in the Public Subnet to allow instances in the Private Subnet to access the internet
 
 * Server List & Roles:
-  - Gateway Server: Single entry point and Nginx Reverse Proxy managing external HTTP/HTTPS traffic and automatic SSL
-  - Staging Server: Testing environment for validating application updates securely before production release.
-  - Production - Master: The K3s Control Plane managing the Kubernetes cluster within the isolated private network.
-  - Production - Worker: The K3s compute node running the live production application pods.
-  - CI/CD - GitLab Runner: Automation server hosting the self-managed GitLab Runner for pipelines (build, test, push, deploy).
-  - Monitoring & Registry Server: Hosts Prometheus/Grafana for system monitoring and a Private Docker Registry for image storage.
+  - Gateway Server: Single entry point and Nginx Reverse Proxy for external traffic.
+  - Staging Server: Staging environment.
+  - Production - Master: K3s Control Plane.
+  - Production - Worker: K3s compute node for live apps.
+  - CI/CD - GitLab Runner: GitLab Runner server.
+  - Monitoring & Registry Server: Prometheus/Grafana and Private Docker Registry.
 
 * Create a new directory for Terraform in your local computer, the structures will be as follow:
 <pre>
@@ -87,15 +83,14 @@ Terraform/
 </pre>
 <img width="1484" height="51" alt="image" src="https://github.com/user-attachments/assets/646945af-4b65-47e7-a4f5-8537a75f9602" />
 
-**3. Deploying the Infrastructure**
-
-* Initialize Terraform and download providers `terraform init`
+### **3. Deploying the Infrastructure**
+* Initialize Terraform `terraform init`
 <img width="1398" height="574" alt="Screenshot 2026-04-28 004901" src="https://github.com/user-attachments/assets/c2d91bb2-3f87-49ea-8ab1-455837c6657a" />
 
-* Format Terraform configuration files to a canonical format and style `terraform fmt`
+* Format files `terraform fmt`
 <img width="1420" height="91" alt="image" src="https://github.com/user-attachments/assets/f19d911a-13bf-4c77-bc68-0fff6cbbb95f" />
 
-* Validate the configuration files to ensure they are syntactically valid and internally consistent `terraform validate`
+* Validate config `terraform validate`
 <img width="1425" height="68" alt="image" src="https://github.com/user-attachments/assets/8edaf942-7a4d-4fb1-87d7-775964b8bb2e" />
 
 * Review and save the execution plan `terraform plan -out=tfplan`
@@ -105,10 +100,9 @@ Terraform/
 <img width="1486" height="449" alt="image" src="https://github.com/user-attachments/assets/4bba9649-849d-4ffe-ad95-c36ccd6bb472" />
 
 
-## Creating Infrastructure with Terraform
+## Configuration Management with Ansible
 
-**1. Ansible Installation**
-
+### **1. Ansible Installation**
 * Install pipx
 ```
 sudo apt update
@@ -127,7 +121,7 @@ pipx install ansible-core           # Run this if you want the minimal ansible-c
 * Verify with `ansible --version`
 <img width="1483" height="224" alt="image" src="https://github.com/user-attachments/assets/b23b106b-ed2e-4eda-b054-d69f74b01ab8" />
 
-**2. Project Structure**
+### **2. Project Structure**
 
 * Create a new directory for Ansible in your local computer, the structures will be as follow:
 <pre>
@@ -154,8 +148,8 @@ ansible/
 └── <a href="./ansible/.vault_pass"><b>.vault_pass</b></a>                        # Ansible Vault password file (git-ignored)
 </pre>
 
-**3. Encrypting content with Ansible Vault**
-Ansible Vault is a built-in Ansible feature for encrypting sensitive data such as passwords and credentials directly inside your variable files, so they are safe to store in a repository.
+### **3. Encrypting content with Ansible Vault**
+Ansible Vault is a built-in Ansible feature for encrypting sensitive data inside variable files, so they are safe to store in a repository.
 
 * Create a vault password file and secure it
 ```
