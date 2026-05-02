@@ -57,15 +57,36 @@ sudo gitlab-runner restart
 ```
 <img width="1706" height="56" alt="image" src="https://github.com/user-attachments/assets/2a81bb94-3c9b-4a5b-97a2-7938ad8ef1bb" />
 
-**3. GitLab Variables Setup**
+**5. GitLab Variables Setup**
 
-Configure variables in **GitLab** > **Settings** > **CI/CD** > **Variables** to allow the pipeline to communicate with the registry and staging server.
-<img width="1661" height="838" alt="image" src="https://github.com/user-attachments/assets/3653a0ef-d799-40b8-b1ef-250f1a339625" />
+* Go to your Frontend repository and navigate to **Settings > CI/CD > Variables**.  
+
+* Add the following required credentials and configurations:
+   * `SSH_PRIVATE_KEY` (Type: File) - Private key for SSH access.
+   * `STAGING_IP` - IP address of the Staging server.
+   * `STAGING_USER` - SSH username for the Staging server.
+   * `REGISTRY_URL` - Private Docker Registry URL.
+   * `REGISTRY_USER` - Username for the Docker Registry.
+   * `REGISTRY_PASS` - Password for the Docker Registry.
+   * `SONAR_URL` - URL of the SonarQube dashboard.
+   * `SONAR_TOKEN` - Access token for SonarQube authentication.
+   * `TEST_URL` - Public URL to verify the deployment.
+   * `DOCKER_COMPOSE` (Type: File) - The `docker-compose.yml` script.
+   * `ENV_FILE` (Type: File) - The `.env` variables.
+
+* Open your Backend repository and navigate to **Settings > CI/CD > Variables**.
+ 
+* Repeat the process to add the exact same variables, make sure `DOCKER_COMPOSE` and `ENV_FILE` contain the scripts specifically made for the Backend.
+
+<img width="1709" height="842" alt="image" src="https://github.com/user-attachments/assets/77c8de24-d15f-4850-8406-a0d132214ae1" />
 
 **4. Pipeline Execution**
-This pipeline works differently based on the branch. The staging branch is deployed directly to the server using SSH and Docker Compose. Meanwhile, the production branch is set up for GitOps (FluxCD) using Kubernetes manifests.
+This pipeline is fully dynamic and utilizes GitLab predefined variables (like `$CI_PROJECT_NAME`), allowing the **exact same `.gitlab-ci.yml` script** to be used across both Frontend and Backend repositories. The deployment behavior changes based on the branch:
 
-* Create a `.git-ci.yml` on both branches. Commit and push to `staging` branch.
+* **Staging Branch:** Deployed directly to the Staging server using SSH.
+* **Production Branch:** Prepared for a GitOps workflow (FluxCD/K3s) by updating Kubernetes manifests.
+
+- Create a `.git-ci.yml` on both Frontend and Backend repositories:
 ```
 stages:
   - test
@@ -75,6 +96,8 @@ stages:
 
 variables:
   IMAGE_TAG: $CI_COMMIT_BRANCH
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
 # 1. TESTING STAGE
 sonarqube_check:
@@ -94,7 +117,7 @@ build_image:
   services:
     - docker:dind
   before_script:
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY_URL
+    - echo "$REGISTRY_PASS" | docker login $REGISTRY_URL -u "$REGISTRY_USER" --password-stdin
   script:
     - docker build -t $REGISTRY_URL/$CI_PROJECT_NAME:$IMAGE_TAG .
     - docker push $REGISTRY_URL/$CI_PROJECT_NAME:$IMAGE_TAG
@@ -103,24 +126,34 @@ build_image:
   tags:
     - cicd
 
-# 3a. DEPLOY STAGE (STAGING ONLY)
 deploy_staging:
   stage: deploy
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
   script:
-    # Create directory and securely transfer Compose & Env files
-    - ssh -o StrictHostKeyChecking=no $STAGING_USER@$STAGING_IP "mkdir -p ~/app/$CI_PROJECT_NAME"
-    - scp -o StrictHostKeyChecking=no $DOCKER_COMPOSE $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/docker-compose.yml
-    - scp -o StrictHostKeyChecking=no $ENV_FILE $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/.env
-    # Restart the application containers
-    - ssh -o StrictHostKeyChecking=no $STAGING_USER@$STAGING_IP "
-        docker login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY_URL &&
+    - cp $ENV_FILE .env.deploy
+    - echo "" >> .env.deploy
+    - echo "REGISTRY_URL=$REGISTRY_URL" >> .env.deploy
+    - echo "CI_PROJECT_NAME=$CI_PROJECT_NAME" >> .env.deploy
+    - echo "IMAGE_TAG=$IMAGE_TAG" >> .env.deploy
+
+    # Create directory and transfer Compose & Env files
+    - ssh -o StrictHostKeyChecking=no -p 6969 $STAGING_USER@$STAGING_IP "mkdir -p ~/app/$CI_PROJECT_NAME"
+    - scp -o StrictHostKeyChecking=no -P 6969 $DOCKER_COMPOSE $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/docker-compose.yml
+    - scp -o StrictHostKeyChecking=no -P 6969 .env.deploy $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/.env
+    
+    # Restart the application containers 
+    - ssh -o StrictHostKeyChecking=no -p 6969 $STAGING_USER@$STAGING_IP "
+        echo '$REGISTRY_PASS' | docker login $REGISTRY_URL -u '$REGISTRY_USER' --password-stdin &&
         cd ~/app/$CI_PROJECT_NAME &&
+        export REGISTRY_URL=$REGISTRY_URL &&
+        export CI_PROJECT_NAME=$CI_PROJECT_NAME &&
+        export IMAGE_TAG=$IMAGE_TAG &&
         docker compose pull &&
         docker compose up -d"
   rules:
@@ -144,14 +177,18 @@ deploy_production_gitops:
 verify_staging:
   stage: verify
   image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
   script:
     - echo "Verifying staging deployment..."
-    - wget --spider -q -t 5 --waitretry=5 http://$STAGING_IP || (echo "Deployment Failed - Host Unreachable" && exit 1)
+    - sleep 10
+    - curl -s -o /dev/null -w "%{http_code}" $TEST_URL | grep -E '^[2345]' || (echo "Deployment Failed" && exit 1)
     - echo "Deployment Verified Successfully."
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging"'
   tags:
     - cicd
 ```
+* Push the `.gitlab-ci.yml` to their respective repositories to trigger the pipelines
 <img width="1483" height="349" alt="image" src="https://github.com/user-attachments/assets/80393fa9-478b-473a-b1a1-05675f143c00" />
-
+<img width="1424" height="287" alt="image" src="https://github.com/user-attachments/assets/177ba823-2f97-4467-8c7a-31135c1f527f" />
