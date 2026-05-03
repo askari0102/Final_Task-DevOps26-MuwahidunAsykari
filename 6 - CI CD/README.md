@@ -87,7 +87,7 @@ stages:
   - verify
 
 variables:
-  IMAGE_TAG: $CI_COMMIT_BRANCH
+  IMAGE_TAG: $CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
@@ -134,13 +134,9 @@ deploy_staging:
     - echo "REGISTRY_URL=$REGISTRY_URL" >> .env.deploy
     - echo "CI_PROJECT_NAME=$CI_PROJECT_NAME" >> .env.deploy
     - echo "IMAGE_TAG=$IMAGE_TAG" >> .env.deploy
-
-    # Create directory and transfer Compose & Env files
     - ssh -o StrictHostKeyChecking=no -p 6969 $STAGING_USER@$STAGING_IP "mkdir -p ~/app/$CI_PROJECT_NAME"
     - scp -o StrictHostKeyChecking=no -P 6969 $DOCKER_COMPOSE $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/docker-compose.yml
     - scp -o StrictHostKeyChecking=no -P 6969 .env.deploy $STAGING_USER@$STAGING_IP:~/app/$CI_PROJECT_NAME/.env
-    
-    # Restart the application containers 
     - ssh -o StrictHostKeyChecking=no -p 6969 $STAGING_USER@$STAGING_IP "
         echo '$REGISTRY_PASS' | docker login $REGISTRY_URL -u '$REGISTRY_USER' --password-stdin &&
         cd ~/app/$CI_PROJECT_NAME &&
@@ -149,19 +145,34 @@ deploy_staging:
         export IMAGE_TAG=$IMAGE_TAG &&
         docker compose pull &&
         docker compose up -d &&
-        docker image prune -f"
+        docker image prune -a -f"
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging"'
   tags:
     - cicd
 
-# 3b. DEPLOY STAGE (PRODUCTION GITOPS PREPARATION)
+# 3b. DEPLOY STAGE (PRODUCTION GITOPS)
 deploy_production_gitops:
   stage: deploy
   image: alpine:latest
+  before_script:
+    - apk add --no-cache git openssh-client
+    - eval $(ssh-agent -s)
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
   script:
-    - echo "GitOps workflow triggered for Production branch."
-    - echo "In a complete setup, this job will clone the gitops-manifest repo, update the image tag, and push the changes for K3s/FluxCD to sync."
+    - echo "Triggering GitOps workflow for Production..."
+    - git clone git@gitlab.com:askari0102/finaltask-gitops.git
+    - cd finaltask-gitops
+    - 'sed -i "s|image: $REGISTRY_URL/$CI_PROJECT_NAME:.*|image: $REGISTRY_URL/$CI_PROJECT_NAME:$IMAGE_TAG|g" clusters/production/$CI_PROJECT_NAME-deployment.yaml'
+    - git config user.email "gitlab-ci@studentdumbways.my.id"
+    - git config user.name "GitLab CI Bot"
+    - git add .
+    - 'git commit -m "auto-deploy: update $CI_PROJECT_NAME image tag to $IMAGE_TAG"'
+    - git push origin main
+    - echo "Done! FluxCD will automatically detect this commit and sync it to the k3s cluster."
   rules:
     - if: '$CI_COMMIT_BRANCH == "production"'
   tags:
