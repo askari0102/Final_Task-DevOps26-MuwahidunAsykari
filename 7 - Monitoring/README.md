@@ -66,7 +66,7 @@ Secure the Prometheus dashboard by enabling Basic Authentication at the Nginx on
 |-------------------|-------------------------------------------------------------------------------|-------------|-----------|
 | Container Status     | label_replace(time() - container_last_seen{image!="", name!~"cadvisor"}, "host", "$1", "alias", "cAdvisor-(.*)") | Seconds | > 15 (Down)         |
 | Container CPU     | sum by (name, host) (label_replace(rate(container_cpu_usage_seconds_total{image!="", name!~"cadvisor"}[5m]), "host", "$1", "alias", "cAdvisor-(.*)")) * 100  | Percent (%) | -         |
-| Container RAM | sum by (name, host) (label_replace(container_memory_working_set_bytes{image!="", name!~"cadvisor"}, "host", "$1", "alias", "cAdvisor-(.*)"))          | Percent (%)  | - |
+| Container RAM | sum by (name, host) (label_replace(container_memory_working_set_bytes{image!="", name!~"cadvisor"}, "host", "$1", "alias", "cAdvisor-(.*)"))          | Bytes (IEC)  | - |
 
 ### 5. Visualization & Refinement
 After running the queries, refine the panels to make the dashboard readable and informative.
