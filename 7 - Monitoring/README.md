@@ -123,6 +123,11 @@ Once all panels for VM and Container resources are configured and organized, the
 * Name the contact point and select **Telegram** as the integration type. Enter the **BOT API Token** and **Chat ID**.
 <img width="1919" height="799" alt="image" src="https://github.com/user-attachments/assets/0f6848b3-b080-479b-ab19-16bbb7a68f49" />
 
+* Customize Message Format to make the alert notifications cleaner and more readable, expand the **Optional Telegram settings** section.
+  - Set** Parse mode** to `HTML`.
+  - Paste the following template into the **Message** field:
+<img width="1919" height="903" alt="image" src="https://github.com/user-attachments/assets/aa79bebb-e291-4d48-9b09-b67c16c67a26" />
+
 * Click **Test** to ensure the connection works, then click **Save contact point**.
 <img width="928" height="339" alt="image" src="https://github.com/user-attachments/assets/12eacbd8-cfdb-4b7c-96c1-327c0676d602" />
 <img width="1388" height="911" alt="image" src="https://github.com/user-attachments/assets/9a0b145c-4a79-4dc2-bcad-4732675f36ff" />
@@ -183,9 +188,15 @@ Please clear unused logs or files immediately to prevent server crashes.`
 
 <img width="1919" height="738" alt="image" src="https://github.com/user-attachments/assets/84851ac4-23db-4920-a1b1-e55b6be5079b" />
 <img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/7d08d506-546f-4e0d-837c-337db3425c98" />
+<img width="1565" height="585" alt="image" src="https://github.com/user-attachments/assets/5e0fc129-06ff-4b19-995c-43dd8e3e3c75" />
 
+### 5. Testing the Alert
 
+**Manual Threshold Trigger**: Edit an alert rule and temporarily lower the threshold (e.g., set RAM Alert to Above 60%) to trigger the alert
+<img width="1919" height="301" alt="image" src="https://github.com/user-attachments/assets/27e029eb-14a1-45d1-9258-794dbe3db20f" />
 
+---
+<img width="1387" height="212" alt="image" src="https://github.com/user-attachments/assets/6414b03b-0724-4d7d-9776-fd0bb9d34bc3" />
 
 
 
