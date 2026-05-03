@@ -1,0 +1,245 @@
+---
+# ─── Base Setup (All Servers) ─────────────────────────────────────────────────
+- name: Base setup for all servers
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install ACL package
+      apt:
+        name: acl
+        state: present
+        update_cache: yes
+
+    # ─── User Setup ───────────────────────────────────────────────────────────
+    - name: Create new user
+      user:
+        name: "{{ new_user }}"
+        password: "{{ new_user_password }}"
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        state: present
+
+    - name: Allow passwordless sudo for new user
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: "^%{{ new_user }}"
+        line: "{{ new_user }} ALL=(ALL) NOPASSWD:ALL"
+        validate: "/usr/sbin/visudo -cf %s"
+
+    - name: Copy authorized keys from ubuntu to new user
+      shell: "cat /home/ubuntu/.ssh/authorized_keys"
+      register: ubuntu_keys
+      changed_when: false
+
+    - name: Set authorized key for new user
+      ansible.posix.authorized_key:
+        user: "{{ new_user }}"
+        state: present
+        key: "{{ ubuntu_keys.stdout }}"
+
+    - name: Force reconnect with new user groups
+      meta: reset_connection
+
+    # ─── Node Exporter ────────────────────────────────────────────────────────
+    - name: Install Node Exporter
+      apt:
+        name: prometheus-node-exporter
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Start and enable Node Exporter
+      service:
+        name: prometheus-node-exporter
+        state: started
+        enabled: yes
+
+    # ─── UFW ──────────────────────────────────────────────────────────────────
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: present
+
+    - name: Allow SSH port
+      ufw:
+        rule: allow
+        port: "6969"
+        proto: tcp
+
+    - name: Allow Node Exporter
+      ufw:
+        rule: allow
+        port: "{{ node_exporter_port }}"
+        proto: tcp
+
+    - name: Allow HTTP and HTTPS on gateway
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - "80"
+        - "443"
+      when: inventory_hostname in groups['gateway']
+
+    - name: Allow cAdvisor on container servers
+      ufw:
+        rule: allow
+        port: "{{ cadvisor_port }}"
+        proto: tcp
+      when: inventory_hostname in groups['staging'] or
+            inventory_hostname in groups['cicd'] or
+            inventory_hostname in groups['monitoring']
+
+    - name: Allow Staging Application & DB ports
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - "80"
+        - "5000"
+        - "5432" 
+      when: inventory_hostname in groups['staging']
+
+    - name: Allow Monitoring & Registry ports
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - "{{ prometheus_port }}" 
+        - "{{ grafana_port }}"    
+        - "{{ registry_port }}"   
+      when: inventory_hostname in groups['monitoring']
+
+    - name: Allow SonarQube port on CICD
+      ufw:
+        rule: allow
+        port: "9000"
+        proto: tcp
+      when: inventory_hostname in groups['cicd']
+
+    - name: Allow k3s ports on master
+      ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop:
+        - { port: "6443", proto: "tcp" }
+        - { port: "8472", proto: "udp" }
+        - { port: "10250", proto: "tcp" }
+        - { port: "{{ fe_port }}", proto: "tcp" }
+        - { port: "{{ be_port }}", proto: "tcp" }
+      when: inventory_hostname in groups['k3s_master']
+
+    - name: Allow k3s ports on worker
+      ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop:
+        - { port: "8472", proto: "udp" }
+        - { port: "10250", proto: "tcp" }
+        - { port: "{{ fe_port }}", proto: "tcp" }
+        - { port: "{{ be_port }}", proto: "tcp" }
+      when: inventory_hostname in groups['k3s_worker']
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+      async: 10
+      poll: 0
+
+    - name: Wait for servers to come back
+      wait_for_connection:
+        delay: 5
+        timeout: 60
+        
+# ─── Docker + cAdvisor (Container Servers) ────────────────────────────────────
+- name: Install Docker and cAdvisor
+  hosts: staging, cicd, monitoring
+  become: true
+
+  tasks:
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Python library
+      pip:
+        name:
+          - docker
+          - docker-compose
+        executable: pip3
+
+    - name: Add new user to docker group
+      user:
+        name: "{{ new_user }}"
+        groups: docker
+        append: yes
+
+    - name: Start and enable Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Force reconnect with new user groups
+      meta: reset_connection
+
+    # ─── cAdvisor ─────────────────────────────────────────────────────────────
+    - name: Run cAdvisor
+      docker_container:
+        name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:latest
+        state: started
+        restart_policy: always
+        privileged: yes
+        published_ports:
+          - "{{ cadvisor_port }}:8080"
+        command:
+          - "--docker_only=true"
+          - "--store_container_labels=false"
+          - "--enable_metrics=cpu,memory,app"
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:ro
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
+          - /dev/disk/:/dev/disk:ro
+        devices:
+          - /dev/kmsg
+      become: yes

@@ -1,0 +1,40 @@
+---
+# PostgreSQL, Nginx Load Balancer
+- name: Setup Staging
+  hosts: staging
+  become: true
+
+  tasks:
+    # ─── Create Directory ─────────────────────────────────────────────────────
+    - name: Create staging directory for new user
+      file:
+        path: /home/{{ new_user }}/staging
+        state: directory
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0755'
+
+    # ─── Deploy Compose ───────────────────────────────────────────────────────
+    - name: Deploy docker-compose staging
+      template:
+        src: docker-compose-staging.j2
+        dest: /home/{{ new_user }}/staging/docker-compose.yml
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0644'
+
+    - name: Deploy Nginx load balancer config
+      template:
+        src: nginx-staging.j2
+        dest: /home/{{ new_user }}/staging/nginx-staging.conf
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0644'
+
+    # ─── Run Compose ──────────────────────────────────────────────────────────
+    - name: Run docker compose
+      community.docker.docker_compose_v2:
+        project_src: /home/{{ new_user }}/staging
+        state: present
+      become: yes
+      become_user: "{{ new_user }}"

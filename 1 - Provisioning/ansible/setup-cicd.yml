@@ -1,0 +1,84 @@
+---
+# GitLab Runner, Testing, and SWAP Setup
+- name: Setup CI/CD
+  hosts: cicd
+  become: true
+
+  tasks:
+    # ─── Setup SWAP (4GB) ─────────────────────────────────────────────────────
+    - name: Check if swap file exists
+      stat:
+        path: /swapfile
+      register: swap_stat
+
+    - name: Create swap file
+      command: fallocate -l 4G /swapfile
+      when: not swap_stat.stat.exists
+
+    - name: Set swap file permissions
+      file:
+        path: /swapfile
+        mode: '0600'
+      when: not swap_stat.stat.exists
+
+    - name: Format swap file
+      command: mkswap /swapfile
+      when: not swap_stat.stat.exists
+
+    - name: Enable swap file
+      command: swapon /swapfile
+      when: not swap_stat.stat.exists
+
+    - name: Add swap to fstab
+      lineinfile:
+        path: /etc/fstab
+        regexp: '^/swapfile'
+        line: '/swapfile none swap sw 0 0'
+
+    # ─── GitLab Runner ────────────────────────────────────────────────────────
+    - name: Add GitLab Runner repository
+      shell: curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | bash
+      args:
+        creates: /etc/apt/sources.list.d/runner_gitlab-runner.list
+
+    - name: Install GitLab Runner
+      apt:
+        name: gitlab-runner
+        state: present
+        update_cache: yes
+
+    - name: Add gitlab-runner user to docker group
+      user:
+        name: gitlab-runner
+        groups: docker
+        append: yes
+
+    # ─── SonarQube Setup ──────────────────────────────────────────────────────
+    - name: Set vm.max_map_count for SonarQube
+      sysctl:
+        name: vm.max_map_count
+        value: "262144"
+        state: present
+        reload: yes
+
+    - name: Create SonarQube directory
+      file:
+        path: /home/{{ new_user }}/sonarqube
+        state: directory
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0755'
+
+    - name: Deploy SonarQube compose from template
+      template:
+        src: docker-compose-cicd.j2
+        dest: /home/{{ new_user }}/sonarqube/docker-compose.yml
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0644'
+
+    - name: Run SonarQube
+      community.docker.docker_compose_v2:
+        project_src: /home/{{ new_user }}/sonarqube
+        state: present
+      become_user: "{{ new_user }}"

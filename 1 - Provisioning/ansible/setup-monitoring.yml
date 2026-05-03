@@ -1,0 +1,40 @@
+---
+# Monitoring: Prometheus, Grafana
+- name: Setup Monitoring
+  hosts: monitoring
+  become: true
+
+  tasks:
+    # ─── Create Directory ─────────────────────────────────────────────────────
+    - name: Create monitoring directory for new user
+      file:
+        path: /home/{{ new_user }}/monitoring
+        state: directory
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0755'
+
+    # ─── Deploy Configs ───────────────────────────────────────────────────────
+    - name: Deploy Prometheus config
+      template:
+        src: prometheus.j2
+        dest: /home/{{ new_user }}/monitoring/prometheus.yml
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0644'
+
+    - name: Deploy docker-compose monitoring
+      template:
+        src: docker-compose-monitoring.j2
+        dest: /home/{{ new_user }}/monitoring/docker-compose.yml
+        owner: "{{ new_user }}"
+        group: "{{ new_user }}"
+        mode: '0644'
+
+    # ─── Run Compose ──────────────────────────────────────────────────────────
+    - name: Run docker compose
+      community.docker.docker_compose_v2:
+        project_src: /home/{{ new_user }}/monitoring
+        state: present
+      become: yes
+      become_user: "{{ new_user }}"

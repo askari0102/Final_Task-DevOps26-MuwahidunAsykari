@@ -1,0 +1,211 @@
+---
+# Task 9: k3s Cluster, Nginx Ingress, PostgreSQL
+- name: Install k3s Master
+  hosts: k3s_master
+  become: true
+
+  tasks:
+    - name: Install k3s master without Traefik 
+      shell: |
+        curl -sfL https://get.k3s.io | sh -s - server \
+          --disable servicelb \
+          --node-name master
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Wait for k3s to be ready
+      wait_for:
+        path: /var/lib/rancher/k3s/server/node-token
+        state: present
+        timeout: 60
+
+    - name: Get k3s node token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+
+    - name: Get k3s master private IP
+      set_fact:
+        master_ip: "{{ ansible_host }}"
+    
+
+- name: Install k3s Worker
+  hosts: k3s_worker
+  become: true
+
+  tasks:
+    - name: Join worker to k3s cluster
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['k3s_master'][0]]['ansible_host'] }}:6443 \
+          K3S_TOKEN={{ hostvars[groups['k3s_master'][0]]['k3s_token']['content'] | b64decode | trim }} \
+          sh -s - agent \
+          --node-name worker
+      args:
+        creates: /usr/local/bin/k3s-agent
+
+- name: Setup k3s Cluster
+  hosts: k3s_master
+  become: true
+
+  tasks:
+    - name: Set KUBECONFIG
+      lineinfile:
+        path: /root/.profile
+        line: "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
+        state: present
+
+    - name: Add tls-san to k3s config
+      copy:
+        dest: /etc/rancher/k3s/config.yaml
+        content: |
+          tls-san:
+            - {{ ansible_host }}
+          cluster-init: true
+          disable:
+            - traefik
+
+    # ─── Helm ─────────────────────────────────────────────────────────────────
+    - name: Install Helm
+      shell: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+      args:
+        creates: /usr/local/bin/helm
+
+    # ─── Nginx Ingress ────────────────────────────────────────────────────────
+    - name: Add Nginx Ingress Helm repo
+      shell: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Update Helm repos
+      shell: helm repo update
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Install Nginx Ingress
+      shell: |
+        helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+          --namespace ingress-nginx \
+          --create-namespace \
+          --set controller.hostNetwork=true \
+          --set controller.service.type=ClusterIP \
+          --set controller.kind=DaemonSet
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    # ─── FluxCD CLI ───────────────────────────────────────────────────────────
+    - name: Install FluxCD CLI
+      shell: curl -s https://fluxcd.io/install.sh | sudo bash
+      args:
+        creates: /usr/local/bin/flux
+
+    # ─── PostgreSQL ───────────────────────────────────────────────────────────
+    - name: Create PostgreSQL namespace
+      shell: kubectl create namespace production --dry-run=client -o yaml | kubectl apply -f -
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Create PostgreSQL secret
+      shell: |
+        kubectl create secret generic postgresql-secret \
+          --from-literal=POSTGRES_DB={{ prod_db_name }} \
+          --from-literal=POSTGRES_USER={{ prod_db_user }} \
+          --from-literal=POSTGRES_PASSWORD={{ prod_db_password }} \
+          --namespace production \
+          --dry-run=client -o yaml | kubectl apply -f -
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Deploy PostgreSQL StatefulSet
+      shell: kubectl apply -f -
+      args:
+        stdin: |
+          apiVersion: apps/v1
+          kind: StatefulSet
+          metadata:
+            name: postgresql
+            namespace: production
+          spec:
+            selector:
+              matchLabels:
+                app: postgresql
+            serviceName: postgresql-service
+            replicas: 1
+            template:
+              metadata:
+                labels:
+                  app: postgresql
+              spec:
+                containers:
+                  - name: postgresql
+                    image: postgres:16-alpine
+                    ports:
+                      - containerPort: 5432
+                    envFrom:
+                      - secretRef:
+                          name: postgresql-secret
+                    volumeMounts:
+                      - name: postgresql-storage
+                        mountPath: /var/lib/postgresql/data
+            volumeClaimTemplates:
+              - metadata:
+                  name: postgresql-storage
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  storageClassName: local-path
+                  resources:
+                    requests:
+                      storage: 1Gi
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: postgresql-service
+            namespace: production
+          spec:
+            selector:
+              app: postgresql
+            type: ClusterIP
+            ports:
+              - protocol: TCP
+                port: 5432
+                targetPort: 5432
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    # ─── Docker Registry Secret ───────────────────────────────────────────────
+    - name: Create Private Registry Secret
+      shell: |
+        kubectl create secret docker-registry registry-secret \
+          --docker-server=registry.{{ domain_name }} \
+          --docker-username={{ registry_user }} \
+          --docker-password={{ registry_password }} \
+          --namespace production \
+          --dry-run=client -o yaml | kubectl apply -f -
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    # ─── Backend Environment Secret ───────────────────────────────────────────
+    - name: Create Backend Secret
+      shell: |
+        kubectl create secret generic be-dumbmerch-secret \
+          --from-literal=DB_HOST=postgresql-service \
+          --from-literal=DB_PORT={{ prod_db_port }} \
+          --from-literal=DB_USER={{ prod_db_user }} \
+          --from-literal=DB_PASSWORD={{ prod_db_password }} \
+          --from-literal=DB_NAME={{ prod_db_name }} \
+          --namespace production \
+          --dry-run=client -o yaml | kubectl apply -f -
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+# ─── Remote Kubectl Setup ─────────────────────────────────────────────────
+    - name: Fetch kubeconfig to local machine
+      fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: ~/.kube/config-finaltask
+        flat: yes
+
