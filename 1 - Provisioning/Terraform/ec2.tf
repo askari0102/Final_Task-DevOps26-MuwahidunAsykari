@@ -109,6 +109,11 @@ resource "aws_instance" "cicd" {
   vpc_security_group_ids = [aws_security_group.sg_private.id]
   key_name               = aws_key_pair.finaltask_key.key_name
 
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp3" 
+  }
+
   user_data = <<-EOF
     #!/bin/bash
     hostnamectl set-hostname cicd-runner
