@@ -51,21 +51,22 @@ Secure the Prometheus dashboard by enabling Basic Authentication at the Nginx on
 
 * **VM Resources Queries (Node Exporter)**
 
-| Metric                | PromQL Query                                                                                              | Unit        | Threshold |
-|-----------------------|-----------------------------------------------------------------------------------------------------------|-------------|-----------|
-| CPU Usage             | 100 - (avg by (alias) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)                             | Percent (%) | > 80%     |
-| RAM Usage             | (1 - (avg by (alias)(node_memory_MemAvailable_bytes) / avg by (alias)(node_memory_MemTotal_bytes))) * 100 | Percent (%) | > 80%     |
-| Disk Usage         | avg by (alias) (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / 1024 / 1024 / 1024     | Gigabytes   | < 2GB     |
-| VM Network (Receive)  | rate(node_network_receive_bytes_total{device=~"eth0|ens.*"}[5m])                                          | Bytes/sec   | -         |
-| VM Network (Transmit) | rate(node_network_transmit_bytes_total{device=~"eth0|ens.*"}[5m])                                         | Bytes/sec   | -         |
+| Metric                | PromQL Query                                                                                                    | Unit          | Threshold |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------|---------------|-----------|
+| CPU Usage             | 100 - (avg by (alias) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)                                   | Percent (%)   | > 80%     |
+| RAM Usage (%)         | (1 - (avg by (alias)(node_memory_MemAvailable_bytes) / avg by (alias)(node_memory_MemTotal_bytes))) * 100       | Percent (%)   | > 80%     |
+| RAM Usage (GB)        | avg by (alias) (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / 1024 / 1024                      | Megabytes     | -         |
+| Disk Usage            | avg by (alias) (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / 1024 / 1024 / 1024 | Gigabytes     | -         |
+| VM Network (Receive)  | avg by (alias) (irate(node_network_receive_bytes_total{device!~"lo&#124;veth.*&#124;br.*"}[5m]))                          | Bytes/sec(IEC) | - |
+| VM Network (Transmit) | avg by (alias) (irate(node_network_transmit_bytes_total{device!~"lo&#124;veth.*&#124;br.*"}[5m]))                         | Bytes/sec(IEC) | - |
 
 * **Container Resources Queries (cAdvisor)**
   
 | Metric            | PromQL Query                                                                  | Unit        | Threshold |
 |-------------------|-------------------------------------------------------------------------------|-------------|-----------|
-| Container CPU     | sum by (alias) (rate(container_cpu_usage_seconds_total{image!=""}[5m])) * 100 | Percent (%) | -         |
-| Container RAM     | sum by (alias) (container_memory_working_set_bytes{image!=""})                | Bytes (IEC) | -         |
-| NGINX Network I/O | rate(container_network_receive_bytes_total{name=~".*nginx.*"}[5m])            | Bytes/sec   | > 50 MB/s |
+| Container Status     | label_replace(time() - container_last_seen{image!="", name!~"cadvisor"}, "host", "$1", "alias", "cAdvisor-(.*)") | Seconds | > 15 (Down)         |
+| Container CPU     | sum by (name, host) (label_replace(rate(container_cpu_usage_seconds_total{image!="", name!~"cadvisor"}[5m]), "host", "$1", "alias", "cAdvisor-(.*)")) * 100  | Percent (%) | -         |
+| Container RAM | sum by (name, host) (label_replace(container_memory_working_set_bytes{image!="", name!~"cadvisor"}, "host", "$1", "alias", "cAdvisor-(.*)"))          | Percent (%)  | - |
 
 ### 5. Visualization & Refinement
 After running the queries, refine the panels to make the dashboard readable and informative.
@@ -77,9 +78,25 @@ After running the queries, refine the panels to make the dashboard readable and 
 * **Standard Options:**
   - Set the **Unit** according to the queried metric (e.g., Percent (0-100) for CPU/RAM, Gigabytes for Storage, Bytes/sec for Network).
   - Define **Min/Max** values to reflect actual hardware capacity (e.g., Max: 100 for percentage metrics).
-  <img width="408" height="357" alt="image" src="https://github.com/user-attachments/assets/c00873ae-c9ec-4192-a774-a06bddf6809e" />
+<img width="408" height="357" alt="image" src="https://github.com/user-attachments/assets/c00873ae-c9ec-4192-a774-a06bddf6809e" />
 
 * **Thresholds:** Configure color-coded indicators (e.g., Green, Yellow, Red) based on the threshold rules to provide quick visual alerts.
 <img width="403" height="259" alt="image" src="https://github.com/user-attachments/assets/b21009d1-d2b1-496d-90ac-bd441495a30c" />
 
+### 6. Final Dashboard View
+Once all panels for VM and Container resources are configured and organized, the dashboard provides a centralized view of the entire infrastructure health.
+* Set as Home Dashboard
+  - Go to **Profile** > **Preferences**.
+  - Select your dashboard in the Home Dashboard dropdown.
+  - Click **Save Preferences**.
+  - Auto-Refresh: Set to 5s (top right).
+<img width="1919" height="858" alt="image" src="https://github.com/user-attachments/assets/0e1d88c0-d36b-4f2d-be9d-0db2060fc1c2" />
 
+---
+<img width="1919" height="960" alt="image" src="https://github.com/user-attachments/assets/982ad3c5-47df-4167-9c86-f6f2c984f806" />
+<img width="1919" height="381" alt="image" src="https://github.com/user-attachments/assets/d57c2884-0c62-468e-a145-fb8359b31c7a" />
+<img width="1919" height="522" alt="image" src="https://github.com/user-attachments/assets/ce2dd62b-4793-4399-819e-76d2440d7a54" />
+
+## Alerting via Telegram
+
+### 1. Create Telegram Bot
