@@ -44,6 +44,14 @@ kubectl get all,pvc -n production
 ```
 <img width="1919" height="323" alt="image" src="https://github.com/user-attachments/assets/a55d5e58-d2d5-40a2-aec7-53d8c2032204" />
 
+* Disable Nginx Ingress Webhook
+  
+Remove the Nginx validating webhook to prevent `timeout` errors during the automated FluxCD deployment.
+```
+kubectl delete ValidatingWebhookConfiguration ingress-nginx-admission
+```
+<img width="1919" height="93" alt="image" src="https://github.com/user-attachments/assets/3f58d466-2f4e-418c-9523-c5cb3f897d2b" />
+
 ### 3. GitOps - FluxCD Setup
 
 * Install Flux CLI in local computer
