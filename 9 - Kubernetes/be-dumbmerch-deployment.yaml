@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be-dumbmerch
+  namespace: production
+  labels:
+    app: be-dumbmerch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: be-dumbmerch
+  template:
+    metadata:
+      labels:
+        app: be-dumbmerch
+    spec:
+      imagePullSecrets:
+        - name: registry-secret
+      containers:
+        - name: be-dumbmerch
+          image: registry.asykari.studentdumbways.my.id/be-dumbmerch:production-e344888c
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:                  
+            - name: PORT        
+              value: "5000"
+          envFrom:
+            - secretRef:
+                name: be-dumbmerch-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-dumbmerch-svc
+  namespace: production
+spec:
+  selector:
+    app: be-dumbmerch
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: be-dumbmerch-ingress
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: api.asykari.studentdumbways.my.id
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: be-dumbmerch-svc
+                port:
+                  number: 5000
