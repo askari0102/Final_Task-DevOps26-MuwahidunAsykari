@@ -7,8 +7,8 @@ Run the Ansible playbook to provision the k3s cluster across the Master and Work
 ```
 ansible-playbook setup-k3s.yml
 ```
-<img width="1479" height="900" alt="image" src="https://github.com/user-attachments/assets/8d331ef8-a729-462f-974d-3b9109302687" />
-<img width="1477" height="719" alt="image" src="https://github.com/user-attachments/assets/9c217d39-397a-4ca7-837c-712e3228de6c" />
+<img width="1481" height="827" alt="image" src="https://github.com/user-attachments/assets/17eda5db-e077-4f3c-9cc7-ffd6f8ae24e9" />
+<img width="1478" height="813" alt="image" src="https://github.com/user-attachments/assets/770863a1-79e3-49b3-be56-e724b4955f2b" />
 
 ### 2. Verify Cluster Access
 The playbook automatically fetches the kubeconfig file to your local machine. Since the cluster resides in a private subnet, you must establish an SSH tunnel to securely access the k3s API.
@@ -76,12 +76,19 @@ flux bootstrap gitlab \
 ### 4. Kubernetes Manifests Deployment
 After bootstrapping, FluxCD will monitor the `finaltask-gitops` repository. Any manifests pushed to the `clusters/production` directory will be automatically synchronized
 
-* Clone the GitOps repository.
+* Clone the GitOps repository and navigate to the production directory.
 ```
 git clone git@gitlab.com:askari0102/finaltask-gitops.git
 cd finaltask-gitops
 ```
 <img width="1857" height="184" alt="image" src="https://github.com/user-attachments/assets/2f91a945-af75-4094-9961-cf272e5713e1" />
+<img width="1477" height="70" alt="image" src="https://github.com/user-attachments/assets/e8fa6518-115b-4b60-9050-605f02997ce3" />
 
-* Add your application manifests (Deployment, Service, and Ingress) into the directory.
-* Commit and push to trigger the GitOps sync.
+* Create the application manifests (Deployment, Service, and Ingress) for both Frontend and Backend
+  
+* Commit and push the initial manifests to trigger the first GitOps sync.
+```
+git add .
+git commit -m "initial application manifests deployment"
+git push origin main
+```
