@@ -157,7 +157,7 @@ ansible/
 ├── <a href="./ansible/inventory"><b>inventory</b></a>                          # Auto-generated from Terraform
 ├── <a href="./ansible/setup-servers.yml"><b>setup-servers.yml</b></a>                  # Task 3: User, UFW, Docker, Node Exporter, cAdvisor
 ├── <a href="./ansible/setup-gateway.yml"><b>setup-gateway.yml</b></a>                  # Task 8: Nginx native, Certbot, SSL wildcard
-├── <a href="./ansible/setup-staging.yml"><b>setup-staging.yml</b></a>                  # Task 5: PostgreSQL, Nginx LB, initial deploy fe & be
+├── <a href="./ansible/setup-staging.yml"><b>setup-staging.yml</b></a>                  # Task 5: PostgreSQL, Nginx LB
 ├── <a href="./ansible/setup-monitoring.yml"><b>setup-monitoring.yml</b></a>               # Task 7: Prometheus, Grafana
 ├── <a href="./ansible/setup-registry.yml"><b>setup-registry.yml</b></a>                 # Task 4: Docker Registry private
 ├── <a href="./ansible/setup-cicd.yml"><b>setup-cicd.yml</b></a>                     # Task 6: GitLab Runner, Testing
