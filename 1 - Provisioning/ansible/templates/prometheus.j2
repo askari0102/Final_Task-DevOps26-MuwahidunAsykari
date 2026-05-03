@@ -1,0 +1,66 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # ─── Node Exporter (All Servers) ────────────────────────────────────────────
+  - job_name: 'node-exporter-gateway'
+    static_configs:
+      - targets: ['{{ hostvars["gateway_server"]["gateway_private_ip"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'Gateway-Server'
+
+  - job_name: 'node-exporter-staging'
+    static_configs:
+      - targets: ['{{ hostvars["staging_server"]["ansible_host"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'Staging-Server'
+
+  - job_name: 'node-exporter-master'
+    static_configs:
+      - targets: ['{{ hostvars["master_server"]["ansible_host"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'K3s-Master'
+
+  - job_name: 'node-exporter-worker'
+    static_configs:
+      - targets: ['{{ hostvars["worker_server"]["ansible_host"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'K3s-Worker'
+
+  - job_name: 'node-exporter-cicd'
+    static_configs:
+      - targets: ['{{ hostvars["cicd_server"]["ansible_host"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'CICD-Server'
+
+  - job_name: 'node-exporter-monitoring'
+    static_configs:
+      - targets: ['{{ hostvars["monitoring_server"]["ansible_host"] }}:{{ node_exporter_port }}']
+        labels:
+          alias: 'Monitoring-Server'
+
+  # ─── cAdvisor (Servers running containers) ──────────────────────────────────
+  - job_name: 'cadvisor-staging'
+    static_configs:
+      - targets: ['{{ hostvars["staging_server"]["ansible_host"] }}:{{ cadvisor_port }}']
+        labels:
+          alias: 'cAdvisor-Staging'
+
+  - job_name: 'cadvisor-cicd'
+    static_configs:
+      - targets: ['{{ hostvars["cicd_server"]["ansible_host"] }}:{{ cadvisor_port }}']
+        labels:
+          alias: 'cAdvisor-CICD'
+
+  - job_name: 'cadvisor-monitoring'
+    static_configs:
+      - targets: ['{{ hostvars["monitoring_server"]["ansible_host"] }}:{{ cadvisor_port }}']
+        labels:
+          alias: 'cAdvisor-Monitoring'
+
+  # ─── kube-state-metrics (K3s Cluster) ───────────────────────────────────────
+  - job_name: 'kube-state-metrics'
+    static_configs:
+      - targets: ['{{ hostvars["master_server"]["ansible_host"] }}:32000']
+        labels:
+          alias: 'K3s-Cluster'
