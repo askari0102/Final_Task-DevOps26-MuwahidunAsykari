@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - "{{ staging_db_port }}:5432"
+    volumes:
+      - /home/{{ staging_db_user }}/staging/db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "{{ staging_db_name }}"
+      POSTGRES_USER: "{{ staging_db_user }}"
+      POSTGRES_PASSWORD: "{{ staging_db_password }}"
+    networks:
+      - staging-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-staging
+    restart: always
+    ports:
+      - "{{ fe_port }}:80"
+      - "{{ be_port }}:5000"
+    volumes:
+      - ./nginx-staging.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - db
+    networks:
+      - staging-network
+
+volumes:
+  postgres_data:
+
+networks:
+  staging-network:
+    name: staging-network

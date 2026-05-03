@@ -1,0 +1,201 @@
+# ─── Default Catch-All (Security) ─────────────────────────────────────────────
+server {
+    listen 80 default_server;
+    server_name _;
+    return 444; # Connection closed without response
+}
+
+server {
+    listen 443 ssl default_server;
+    server_name _;
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+    return 444;
+}
+
+# ─── Monitoring ───────────────────────────────────────────────────────────────
+# Node Exporter
+server {
+    listen 80;
+    server_name exporter.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name exporter.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://{{ hostvars['monitoring_server']['ansible_host'] }}:{{ node_exporter_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# Prometheus
+server {
+    listen 80;
+    server_name prom.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name prom.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    auth_basic "Prometheus";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+
+    location / {
+        proxy_pass http://{{ hostvars['monitoring_server']['ansible_host'] }}:{{ prometheus_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# Grafana
+server {
+    listen 80;
+    server_name monitoring.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name monitoring.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://{{ hostvars['monitoring_server']['ansible_host'] }}:{{ grafana_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# ─── Docker Registry ──────────────────────────────────────────────────────────
+server {
+    listen 80;
+    server_name registry.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name registry.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    auth_basic "Docker Registry";
+    auth_basic_user_file /etc/nginx/.htpasswd_registry;
+
+    client_max_body_size 0;
+    chunked_transfer_encoding on;
+
+    location / {
+        proxy_pass http://{{ hostvars['monitoring_server']['ansible_host'] }}:{{ registry_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 900;
+    }
+}
+
+# ─── Staging ──────────────────────────────────────────────────────────────────
+# Frontend
+server {
+    listen 80;
+    server_name staging.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name staging.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://{{ hostvars['staging_server']['ansible_host'] }}:{{ fe_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# Backend
+server {
+    listen 80;
+    server_name api.staging.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name api.staging.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://{{ hostvars['staging_server']['ansible_host'] }}:{{ be_port }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# ─── Production (K3s) ─────────────────────────────────────────────────────────
+upstream k3s_cluster {
+    server {{ hostvars['master_server']['ansible_host'] }}:80;
+    server {{ hostvars['worker_server']['ansible_host'] }}:80;
+}
+
+# Frontend Production
+server {
+    listen 80;
+    server_name {{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name {{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://k3s_cluster;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Backend Production
+server {
+    listen 80;
+    server_name api.{{ domain_name }};
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name api.{{ domain_name }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+    location / {
+        proxy_pass http://k3s_cluster;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
