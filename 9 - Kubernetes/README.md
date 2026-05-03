@@ -92,7 +92,7 @@ cd finaltask-gitops
 <img width="1857" height="184" alt="image" src="https://github.com/user-attachments/assets/2f91a945-af75-4094-9961-cf272e5713e1" />
 <img width="1477" height="70" alt="image" src="https://github.com/user-attachments/assets/e8fa6518-115b-4b60-9050-605f02997ce3" />
 
-* Create the application manifests (Deployment, Service, and Ingress) for both Frontend and Backend
+* Create the application manifests (Deployment, Service, and Ingress) for both [Frontend](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/blob/main/9%20-%20Kubernetes/fe-dumbmerch-deployment.yaml) and [Backend](https://github.com/askari0102/FinalTask-DevOps26-MuwahidunAsykari/blob/main/9%20-%20Kubernetes/be-dumbmerch-deployment.yaml)
 <img width="1919" height="663" alt="image" src="https://github.com/user-attachments/assets/3a600366-1a1a-499f-8ca3-50519fffa6d5" />
   
 * Commit and push the initial manifests to trigger the first GitOps sync.
