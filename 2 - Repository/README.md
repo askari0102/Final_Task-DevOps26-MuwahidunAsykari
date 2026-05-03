@@ -113,14 +113,27 @@ git push -u origin production
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/d5ee485a-895e-4e67-ab9c-6864309d4492" />
 <img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/788bc119-444b-4726-bdb2-71b698751217" />
 
-### **4. Environment Configuration**
+### 4. Branch Protection Setup
+To secure the pipeline environment variables and ensure code integrity, configure the `production` branch as a Protected Branch in both the frontend and backend repositories.
+
+* Navigate to **Settings** > **Repository** and expand the **Protected branches** section.
+
+* Select the `production` branch from the dropdown.
+
+* Set both **Allowed to merge** and **Allowed to push and merge** to _Maintainers_.
+
+* Click the **Protect** button.
+<img width="1919" height="904" alt="image" src="https://github.com/user-attachments/assets/dc26f107-8e3a-41bc-9bef-e3bdcb672cc8" />
+
+  
+### **5. Environment Configuration**
 For security, `.env` values are securely stored in GitLab CI/CD Variables and injected automatically during deployment.
 * **Frontend**: Configured `REACT_APP_BASEURL` to connect to the Backend API.
 
 * **Backend**: Configured all required environment variables for full database and application integration.
 <img width="1417" height="97" alt="image" src="https://github.com/user-attachments/assets/5b6a8e3a-dc44-4ced-a988-c9be906c3ee9" />
 
-### 5. GitOps Repository Setup
+### 6. GitOps Repository Setup
 To implement a secure Continuous Deployment pipeline for the production environment, a separate repository is required to store the Kubernetes manifests
 
 * Create a third blank private repository named `finaltask-gitops`
