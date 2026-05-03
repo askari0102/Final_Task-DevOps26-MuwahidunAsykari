@@ -1,5 +1,5 @@
 [gateway]
-gateway_server ansible_host=54.169.141.21 gateway_private_ip=10.0.1.201
+gateway_server ansible_host=<PUBLIC IP> gateway_private_ip=10.0.1.201
 
 [staging]
 staging_server ansible_host=10.0.2.241
