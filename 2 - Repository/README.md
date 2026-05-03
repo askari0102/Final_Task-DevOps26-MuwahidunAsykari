@@ -123,7 +123,7 @@ To secure the pipeline environment variables and ensure code integrity, configur
 * Set both **Allowed to merge** and **Allowed to push and merge** to _Maintainers_.
 
 * Click the **Protect** button.
-<img width="1919" height="904" alt="image" src="https://github.com/user-attachments/assets/dc26f107-8e3a-41bc-9bef-e3bdcb672cc8" />
+<img width="1545" height="610" alt="image" src="https://github.com/user-attachments/assets/ea5f0677-4651-4957-96a4-4bf11ffd7777" />
 
   
 ### **5. Environment Configuration**
