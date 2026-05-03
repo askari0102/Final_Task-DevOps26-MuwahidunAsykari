@@ -2,7 +2,32 @@
 
 ## Repository Setup & Configuration
 
-### **1. Creating Private Repositories on GitLab**
+### 1. GitLab SSH Key Configuration
+To comply with the requirement of using only one SSH key for all purposes, configure your GitLab account and local machine to use the master `finaltask-key.pem` key.
+
+* Copy the private key from Ubuntu WSL to Windows.
+<img width="1911" height="239" alt="image" src="https://github.com/user-attachments/assets/7dce2ccf-2b6b-4a8a-be9a-1c8617de8a97" />
+
+* Extract the public key from the .pem file.
+```
+ssh-keygen -y -f ~/.ssh/finaltask-key.pem
+```
+<img width="1919" height="185" alt="image" src="https://github.com/user-attachments/assets/af26f415-bfaf-48b9-b394-952f6f626f68" />
+
+* Copy the output and add it to your GitLab account: Go to **User Settings** > **Access** > **SSH Keys** > **Add new key**. Paste the key, set the usage type to Authentication & Signing, and click **Add key**.
+<img width="1919" height="899" alt="image" src="https://github.com/user-attachments/assets/13787b55-6f3f-49a1-aded-c8c99de128fa" />
+
+* Add Gitlab identifier to `/.ssh/config`
+<img width="1050" height="106" alt="image" src="https://github.com/user-attachments/assets/e36622bc-8bab-4a8b-8ce8-ebfd9969fec2" />
+
+* Verify the connection
+```
+ssh -T git@gitlab.com
+```
+<img width="1919" height="66" alt="image" src="https://github.com/user-attachments/assets/61910e45-3e00-4159-9efe-0cbc07f28485" />
+
+
+### **2. Creating Private Repositories on GitLab**
 Prepare two private repositories on GitLab before migrating the code.
 * Go to GitLab, click the **+ (Plus) icon** and select **New project/repository** -> **Create blank project**.
 <img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/6186f893-8f45-4bb3-aa83-3258bf1149e6" />
@@ -17,7 +42,7 @@ Prepare two private repositories on GitLab before migrating the code.
 <img width="1918" height="902" alt="image" src="https://github.com/user-attachments/assets/2a6b0c4d-b81f-4ddc-b3b9-2ce7c3698022" />
 <img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/40e00699-aa9f-46c6-90d7-52935833eb9e" />
 
-### **2. Code Migration & Branching Setup**
+### **3. Code Migration & Branching Setup**
 Clone the original source, link it to the private GitLab repositories, and create the required branches (`staging` and `production`).
 
 * First create a root directory for the app and navigate into it
@@ -88,9 +113,26 @@ git push -u origin production
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/d5ee485a-895e-4e67-ab9c-6864309d4492" />
 <img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/788bc119-444b-4726-bdb2-71b698751217" />
 
-### **3. Environment Configuration**
+### **4. Environment Configuration**
 For security, `.env` values are securely stored in GitLab CI/CD Variables and injected automatically during deployment.
 * **Frontend**: Configured `REACT_APP_BASEURL` to connect to the Backend API.
 
 * **Backend**: Configured all required environment variables for full database and application integration.
 <img width="1417" height="97" alt="image" src="https://github.com/user-attachments/assets/5b6a8e3a-dc44-4ced-a988-c9be906c3ee9" />
+
+### 5. GitOps Repository Setup
+To implement a secure Continuous Deployment pipeline for the production environment, a separate repository is required to store the Kubernetes manifests
+
+* Create a third blank private repository named `finaltask-gitops`
+<img width="1917" height="639" alt="image" src="https://github.com/user-attachments/assets/146bedaa-9f98-4919-94c5-0734d54f111e" />
+
+* Generate a GitLab Personal Access Token (PAT). This token will be used later to bootstrap FluxCD into the cluster.
+    - Click on your **User Avatar** in the top right corner of GitLab and select **Edit profile** (or **Preferences**).
+    - On the left sidebar, click on **Access** > **Personal access tokens**.
+    - Click **Generate token** and select **Legacy token** from the dropdown menu.
+    - Set the **Token name** (e.g., `fluxcd-bootstrap`).
+    - Under **Scopes**, check the boxes for `api`, `read_repository`, and `write_repository`.
+    - Click `Create personal access token`.
+    - Copy the generated token immediately and save it to your notepad
+<img width="1919" height="458" alt="image" src="https://github.com/user-attachments/assets/5a994780-992c-40dd-8e8d-0edc9cd5b8a1" />
+
