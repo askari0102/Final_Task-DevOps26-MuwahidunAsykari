@@ -22,7 +22,7 @@ resource "local_file" "ssh_config" {
   filename        = pathexpand("~/.ssh/config") # Replaces the config file if it already exists
   file_permission = "0600"
   content         = <<-EOT
-    # Gateway (Akses langsung via Public IP)
+    # Gateway (Direct Access via Public IP)
     Host gateway
       HostName ${aws_eip.gateway_eip.public_ip}
       User finaltask-Asykari
@@ -30,7 +30,7 @@ resource "local_file" "ssh_config" {
       IdentityFile ~/.ssh/finaltask-key.pem
       StrictHostKeyChecking no
 
-    # Private Servers (Akses lewat Gateway)
+    # Private Servers (Access through Gateway)
     Host staging
       HostName ${aws_instance.staging.private_ip}
       User finaltask-Asykari
