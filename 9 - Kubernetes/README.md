@@ -80,5 +80,8 @@ After bootstrapping, FluxCD will monitor the `finaltask-gitops` repository. Any 
 ```
 git clone git@gitlab.com:askari0102/finaltask-gitops.git
 cd finaltask-gitops
-mkdir -p clusters/production
 ```
+<img width="1857" height="184" alt="image" src="https://github.com/user-attachments/assets/2f91a945-af75-4094-9961-cf272e5713e1" />
+
+* Add your application manifests (Deployment, Service, and Ingress) into the directory.
+* Commit and push to trigger the GitOps sync.
