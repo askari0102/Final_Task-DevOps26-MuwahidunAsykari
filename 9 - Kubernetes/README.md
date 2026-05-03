@@ -85,6 +85,7 @@ cd finaltask-gitops
 <img width="1477" height="70" alt="image" src="https://github.com/user-attachments/assets/e8fa6518-115b-4b60-9050-605f02997ce3" />
 
 * Create the application manifests (Deployment, Service, and Ingress) for both Frontend and Backend
+<img width="1919" height="663" alt="image" src="https://github.com/user-attachments/assets/3a600366-1a1a-499f-8ca3-50519fffa6d5" />
   
 * Commit and push the initial manifests to trigger the first GitOps sync.
 ```
@@ -92,3 +93,42 @@ git add .
 git commit -m "initial application manifests deployment"
 git push origin main
 ```
+<img width="1485" height="362" alt="image" src="https://github.com/user-attachments/assets/0d6f2b36-76b6-4730-8619-f7916fbb47f0" />
+
+### 5. Trigger CI/CD Pipeline for Production
+With the initial manifests ready, merge the `staging` branch into the `production` branch for both Frontend and Backend. This will trigger the CI/CD pipeline to build the new image and automatically update the manifest.
+
+* Navigate to your application repository
+* Switch to the `production` branch, merge the changes from `staging`, and push to GitLab.
+```
+git checkout production # Or switch the branch directly from VSCode
+git merge staging
+git push origin production
+```
+<img width="1480" height="424" alt="image" src="https://github.com/user-attachments/assets/252d1170-7ef1-403d-be7b-6bafd66eb69f" />
+<img width="1483" height="484" alt="image" src="https://github.com/user-attachments/assets/787b85a5-4d5a-4eb5-8f8e-7996c1a5712a" />
+
+* Monitor the GitLab Pipeline. Ensure the GitOps job successfully updates the image tag and pushes the changes to the GitOps repository
+<img width="1919" height="671" alt="image" src="https://github.com/user-attachments/assets/7c0781c2-dfb9-4bab-b5b4-9f5bf7eb8d53" />
+<img width="1919" height="184" alt="image" src="https://github.com/user-attachments/assets/30279a6b-be8e-4197-a3ef-be3997b9888e" />
+<img width="1919" height="1011" alt="image" src="https://github.com/user-attachments/assets/693e391a-135b-4a7a-8979-7058a669fb08" />
+
+### 6. Verify Deployment and Application Functionality
+After the CI/CD pipeline completes, FluxCD will automatically pull the updated manifests and deploy the latest application images to the k3s cluster.
+
+* Verify that FluxCD has successfully synced the latest commit from the GitOps repository.
+```
+flux get kustomizations
+```
+<img width="1919" height="109" alt="image" src="https://github.com/user-attachments/assets/be5f24e8-c164-47bd-8b95-2ef897b440c2" />
+
+* Check the status of the pods in the production namespace to ensure they are running properly
+```
+kubectl get pods -n production
+```
+<img width="1919" height="157" alt="image" src="https://github.com/user-attachments/assets/418abbb2-a4c4-43f1-9da8-48c24ec33425" />
+
+* Finally, verify the application functionality through the web browser
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/ce85e66e-a85d-44e3-aa6a-2b2b856b7349" />
+<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/8dfd5a6b-095d-46dc-963c-272333b06885" />
+
