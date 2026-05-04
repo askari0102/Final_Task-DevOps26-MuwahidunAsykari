@@ -4,6 +4,8 @@
 
 ### **1. Server Provisioning**
 The first step is to prepare the CI/CD server. 
+* **Storage**: The CI/CD instance is provisioned via Terraform with a larger **20GB** EBS Volume (compared to the standard 8GB for other servers).
+* **Memory & OS Tuning**: The Ansible playbook automatically allocates a **4GB Swap File**
 ```
 ansible-playbook setup-cicd.yml
 ```
