@@ -204,9 +204,12 @@ sudo apt install postgresql-client -y
 
 
 2. Open a terminal and create a local port forwarding tunnel to the Staging/Production server:
+```
+ssh -N -L 5433:127.0.0.1:5432 staging
+```
 <img width="1919" height="49" alt="image" src="https://github.com/user-attachments/assets/cd07ffd0-5f0c-4c15-bfae-e9ee8471bb29" />
 
-3. Connect your database client to the forwarded local port:  
+4. Connect your database client to the forwarded local port:  
 ```
 psql -h 127.0.0.1 -p 5433 -U asykari -d dumbmerch
 ```
