@@ -40,8 +40,7 @@ ansible-playbook setup-gateway.yml
 <img width="1475" height="400" alt="image" src="https://github.com/user-attachments/assets/f49f3846-ea9a-4e9d-83fa-782d3fe2e3f2" />
 
 **2. Verify Cloudflare DNS Records**
-<img width="1919" height="839" alt="image" src="https://github.com/user-attachments/assets/38fd9871-e63d-4481-81fb-1520d6b51911" />
-<img width="1482" height="395" alt="image" src="https://github.com/user-attachments/assets/5839c4ca-4362-47ff-a44e-9a41b906b49d" />
+<img width="1919" height="901" alt="image" src="https://github.com/user-attachments/assets/dafe4430-b974-4ce6-8bdf-41a921ec4d93" />
 
 **3. Verify SSL Auto-Renewal Script**
 ```
