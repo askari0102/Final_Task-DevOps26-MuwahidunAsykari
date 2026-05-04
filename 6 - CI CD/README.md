@@ -3,7 +3,7 @@
 ## Automated CI/CD Pipeline
 
 ### **1. Server Provisioning**
-The first step is to prepare the CI/CD server. SonarQube is a heavy application. Since the CI/CD server only has 2GB of RAM, running it would instantly cause Out of Memory (OOM) crashes. To prevent this:
+The first step is to prepare the CI/CD server. SonarQube is a heavy application. Since the CI/CD server only has 2GB of RAM, extra headroom is needed to prevent potential Out of Memory (OOM) issues. To ensure stability:
 * **Storage**: The CI/CD instance is provisioned via Terraform with a larger **20GB** EBS Volume (compared to the standard 8GB for other servers).
 * **Memory & OS Tuning**: The Ansible playbook automatically allocates a **4GB Swap File**
 ```
