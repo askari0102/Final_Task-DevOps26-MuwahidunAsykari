@@ -192,3 +192,22 @@ Frontend and Backend have 2 containers each for Load Balancing
 <img width="1919" height="587" alt="image" src="https://github.com/user-attachments/assets/a0d21500-787f-424e-a233-71fc4fe7ade0" />
 
 
+### 4. Remote Database
+The database can be accessed remotely for management and debugging purposes using CLI
+
+1. Install psql client
+```
+sudo apt update
+sudo apt install postgresql-client -y
+```
+<img width="1902" height="508" alt="image" src="https://github.com/user-attachments/assets/6940894e-3179-4731-9103-0248287fe47b" />
+
+
+2. Open a terminal and create a local port forwarding tunnel to the Staging/Production server:
+<img width="1919" height="49" alt="image" src="https://github.com/user-attachments/assets/cd07ffd0-5f0c-4c15-bfae-e9ee8471bb29" />
+
+3. Connect your database client to the forwarded local port:  
+```
+psql -h 127.0.0.1 -p 5433 -U asykari -d dumbmerch
+```
+<img width="1917" height="434" alt="image" src="https://github.com/user-attachments/assets/13c3ec59-11ec-45cf-aa68-e2fa2b41cb8b" />
