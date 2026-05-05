@@ -93,9 +93,13 @@ Once all panels for VM and Container resources are configured and organized, the
 <img width="1919" height="858" alt="image" src="https://github.com/user-attachments/assets/0e1d88c0-d36b-4f2d-be9d-0db2060fc1c2" />
 
 ---
-<img width="1919" height="960" alt="image" src="https://github.com/user-attachments/assets/982ad3c5-47df-4167-9c86-f6f2c984f806" />
-<img width="1919" height="381" alt="image" src="https://github.com/user-attachments/assets/d57c2884-0c62-468e-a145-fb8359b31c7a" />
-<img width="1919" height="522" alt="image" src="https://github.com/user-attachments/assets/ce2dd62b-4793-4399-819e-76d2440d7a54" />
+<img width="1919" height="627" alt="image" src="https://github.com/user-attachments/assets/a620d92d-7d75-4d46-8895-c1d372ebcfb5" />
+<img width="1919" height="382" alt="image" src="https://github.com/user-attachments/assets/f267966a-79d1-4f1a-8c26-f312f5b608e3" />
+<img width="1919" height="623" alt="image" src="https://github.com/user-attachments/assets/aa7599f0-ded4-419a-bdfd-817157f2fb29" />
+<img width="1919" height="379" alt="image" src="https://github.com/user-attachments/assets/57ea3cfa-9eca-4f74-9be8-4a22bb3600cd" />
+<img width="1919" height="627" alt="image" src="https://github.com/user-attachments/assets/66eaace5-e20f-4379-8d16-c7ea1aac23af" />
+
+_The pipelines panels are just an extra addition, so it's not covered in the docs._
 
 ## Alerting via Telegram
 
